@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.AspNetCore.Components.WebAssembly.Server;
 using ChordCraft.Core.Entities;
 using ChordCraft.Core.Interfaces;
 using ChordCraft.Infrastructure.Data;
@@ -66,12 +67,20 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
 }
+
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
 
 app.UseCors("AllowClient");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 app.Run();
 
 public partial class Program { }
