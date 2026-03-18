@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChordCraft.Core.Tests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChordCraft.Api.Tests", "tests\ChordCraft.Api.Tests\ChordCraft.Api.Tests.csproj", "{72B52171-1F17-40E5-90C4-5254126867C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChordCraft.Client.Tests", "tests\ChordCraft.Client.Tests\ChordCraft.Client.Tests.csproj", "{8E2744A9-4310-494D-819A-9643219DB506}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,18 @@ Global
 		{72B52171-1F17-40E5-90C4-5254126867C8}.Release|x64.Build.0 = Release|Any CPU
 		{72B52171-1F17-40E5-90C4-5254126867C8}.Release|x86.ActiveCfg = Release|Any CPU
 		{72B52171-1F17-40E5-90C4-5254126867C8}.Release|x86.Build.0 = Release|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Debug|x64.Build.0 = Debug|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Debug|x86.Build.0 = Debug|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Release|x64.ActiveCfg = Release|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Release|x64.Build.0 = Release|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Release|x86.ActiveCfg = Release|Any CPU
+		{8E2744A9-4310-494D-819A-9643219DB506}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,5 +126,6 @@ Global
 		{6BDD2585-01ED-419E-BFD9-81E55B230FE9} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{91BEE358-6FD5-4E17-AF0F-D8144F6F7070} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{72B52171-1F17-40E5-90C4-5254126867C8} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{8E2744A9-4310-494D-819A-9643219DB506} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
