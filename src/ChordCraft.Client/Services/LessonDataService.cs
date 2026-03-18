@@ -17,5 +17,9 @@ public class LessonDataService
     }
 
     public async Task<LessonDetailDto?> GetLessonAsync(int id)
-        => await _http.GetFromJsonAsync<LessonDetailDto>($"api/lessons/{id}");
+    {
+        var response = await _http.GetAsync($"api/lessons/{id}");
+        if (!response.IsSuccessStatusCode) return null;
+        return await response.Content.ReadFromJsonAsync<LessonDetailDto>();
+    }
 }

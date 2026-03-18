@@ -84,11 +84,33 @@
     private IntroLesson? introRef;
     private ReviewLesson? reviewRef;
     private PracticeLesson? practiceRef;
+    private int _loadedLessonId;
 
     protected override async Task OnInitializedAsync()
     {
         await Audio.InitAsync();
+        _loadedLessonId = LessonId;
         lesson = await LessonData.GetLessonAsync(LessonId);
+        if (lesson is null)
+            Navigation.NavigateTo("/lessons");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (LessonId != _loadedLessonId)
+        {
+            _loadedLessonId = LessonId;
+            showResults = false;
+            lesson = null;
+            resultStars = 0;
+            resultAccuracy = 0;
+            resultSpeed = 0;
+            resultPoints = 0;
+            StateHasChanged();
+            lesson = await LessonData.GetLessonAsync(LessonId);
+            if (lesson is null)
+                Navigation.NavigateTo("/lessons");
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
