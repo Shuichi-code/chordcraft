@@ -17,4 +17,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /app .
 EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "dotnet ChordCraft.Api.dll --urls http://+:${PORT:-8080}"]
+ENTRYPOINT ["dotnet", "ChordCraft.Api.dll"]
