@@ -76,4 +76,28 @@ public class AuthMigrateTests : IClassFixture<CustomWebApplicationFactory>, IAsy
         Assert.NotNull(progress);
         Assert.Contains(progress!, p => p.LessonId == 1 && p.BestStars == 3);
     }
+
+    [Fact]
+    public async Task Stats_AuthenticatedUser_ReturnsStatsDto()
+    {
+        var email = $"stats_{Guid.NewGuid():N}@test.com";
+        var regResp = await _client.PostAsJsonAsync("/api/auth/register",
+            new RegisterRequest(email, "Password1!", "StatsUser"));
+        var auth = await regResp.Content.ReadFromJsonAsync<AuthResponse>(JsonOptions);
+        _client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth!.AccessToken);
+
+        var resp = await _client.GetAsync("/api/stats");
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var stats = await resp.Content.ReadFromJsonAsync<ChordCraft.Core.DTOs.Progress.StatsDto>(JsonOptions);
+        Assert.NotNull(stats);
+    }
+
+    [Fact]
+    public async Task Stats_AnonymousUser_Returns401()
+    {
+        var freshClient = _factory.CreateClient();
+        var resp = await freshClient.GetAsync("/api/stats");
+        Assert.Equal(HttpStatusCode.Unauthorized, resp.StatusCode);
+    }
 }

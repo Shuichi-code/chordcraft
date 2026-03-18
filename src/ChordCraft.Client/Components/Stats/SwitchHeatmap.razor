@@ -1,0 +1,71 @@
+@* src/ChordCraft.Client/Components/Stats/SwitchHeatmap.razor *@
+@using ChordCraft.Core.DTOs.Progress
+@using MudBlazor
+
+<div style="display: flex; gap: 32px; flex-wrap: wrap; justify-content: center;">
+    @* Left hand *@
+    <div>
+        <MudText Typo="Typo.caption" Class="text-center mb-1" Style="display:block">Left Hand</MudText>
+        <div style="display: grid; grid-template-columns: repeat(3, 48px); gap: 8px;">
+            @foreach (var sw in _leftSwitches)
+            {
+                var acc = GetAccuracy(sw);
+                <div style="width:48px; height:48px; border-radius:50%; background:@GetColor(acc); display:flex; align-items:center; justify-content:center;"
+                     title="@sw: @(acc.HasValue ? $"{acc:P0}" : "no data")">
+                    <span style="font-size:10px; color:white; font-weight:600;">@GetLabel(sw)</span>
+                </div>
+            }
+        </div>
+    </div>
+    @* Right hand *@
+    <div>
+        <MudText Typo="Typo.caption" Class="text-center mb-1" Style="display:block">Right Hand</MudText>
+        <div style="display: grid; grid-template-columns: repeat(3, 48px); gap: 8px;">
+            @foreach (var sw in _rightSwitches)
+            {
+                var acc = GetAccuracy(sw);
+                <div style="width:48px; height:48px; border-radius:50%; background:@GetColor(acc); display:flex; align-items:center; justify-content:center;"
+                     title="@sw: @(acc.HasValue ? $"{acc:P0}" : "no data")">
+                    <span style="font-size:10px; color:white; font-weight:600;">@GetLabel(sw)</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<SwitchAccuracyDto> SwitchAccuracies { get; set; } = [];
+
+    private static readonly string[] _leftSwitches = ["L-Pinky", "L-Ring", "L-Middle", "L-Index", "L-Thumb", "L-ThumbInner", "L-Palm-Upper", "L-Palm-Lower", "L-Edge"];
+    private static readonly string[] _rightSwitches = ["R-Index", "R-Middle", "R-Ring", "R-Pinky", "R-Thumb", "R-ThumbInner", "R-Palm-Upper", "R-Palm-Lower", "R-Edge"];
+
+    private decimal? GetAccuracy(string switchId)
+    {
+        var entries = SwitchAccuracies.Where(s => s.SwitchId == switchId && s.TotalInputs > 0).ToList();
+        if (entries.Count == 0) return null;
+        return entries.Average(e => e.Accuracy);
+    }
+
+    private static string GetColor(decimal? acc) => acc switch
+    {
+        null => "#ccc",
+        < 0.7m => "#e53935",
+        < 0.85m => "#fb8c00",
+        < 0.95m => "#fdd835",
+        _ => "#43a047"
+    };
+
+    private static string GetLabel(string switchId) => switchId.Split('-').Last() switch
+    {
+        "Pinky" => "Pky",
+        "Ring" => "Rng",
+        "Middle" => "Mid",
+        "Index" => "Idx",
+        "Thumb" => "Thb",
+        "ThumbInner" => "TbI",
+        "Upper" => "PU",
+        "Lower" => "PL",
+        "Edge" => "Edg",
+        _ => "?"
+    };
+}

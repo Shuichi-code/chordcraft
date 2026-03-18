@@ -1,0 +1,144 @@
+@page "/stats"
+@using MudBlazor
+@using System.Net.Http.Json
+@using System.Net.Http.Headers
+@using ChordCraft.Core.DTOs.Progress
+@using ChordCraft.Client.Components.Stats
+@inject HttpClient Http
+@inject AuthStateService Auth
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Your Stats</MudText>
+
+    @if (!Auth.IsAuthenticated)
+    {
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            <MudText>Sign up or log in to track your progress across devices.</MudText>
+            <MudStack Row="true" Spacing="2" Class="mt-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/register">Sign Up Free</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/login">Log In</MudButton>
+            </MudStack>
+        </MudAlert>
+        <MudPaper Class="pa-8 text-center" Elevation="1" Style="opacity: 0.5;">
+            <MudIcon Icon="@Icons.Material.Filled.BarChart" Size="Size.Large" Color="Color.Primary" />
+            <MudText Typo="Typo.h6" Class="mt-2">Stats locked</MudText>
+            <MudText Typo="Typo.body2">Create an account to see your progress charts and heatmap.</MudText>
+        </MudPaper>
+    }
+    else if (_loading)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" Class="mx-auto d-block mt-8" />
+    }
+    else if (_stats is not null)
+    {
+        @* Summary cards *@
+        <MudGrid Class="mb-6">
+            <MudItem xs="6" sm="3">
+                <MudPaper Class="pa-4 text-center" Elevation="1">
+                    <MudText Typo="Typo.h4" Color="Color.Primary">@(_stats.OverallAccuracy.ToString("0.0"))%</MudText>
+                    <MudText Typo="Typo.body2">Accuracy</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" sm="3">
+                <MudPaper Class="pa-4 text-center" Elevation="1">
+                    <MudText Typo="Typo.h4" Color="Color.Primary">@(_stats.Coverage.ToString("P0"))</MudText>
+                    <MudText Typo="Typo.body2">Coverage</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" sm="3">
+                <MudPaper Class="pa-4 text-center" Elevation="1">
+                    <MudText Typo="Typo.h4" Color="Color.Primary">@(_stats.AverageSpeed.ToString("0.0"))</MudText>
+                    <MudText Typo="Typo.body2">Avg WPM</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" sm="3">
+                <MudPaper Class="pa-4 text-center" Elevation="1">
+                    <MudText Typo="Typo.h4" Color="Color.Primary">@FormatTime(_stats.TotalPracticeTime)</MudText>
+                    <MudText Typo="Typo.body2">Practice Time</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        @* Progress chart *@
+        <MudPaper Class="pa-4 mb-6" Elevation="1">
+            <MudText Typo="Typo.h6" Class="mb-3">Progress Over Time</MudText>
+            @if (_stats.DailyStats.Count == 0)
+            {
+                <MudText Typo="Typo.body2" Style="color: #999;">No activity yet — complete some lessons!</MudText>
+            }
+            else
+            {
+                <MudChart ChartType="ChartType.Line"
+                          ChartSeries="_chartSeries"
+                          XAxisLabels="_chartLabels"
+                          Width="100%" Height="250px"
+                          ChartOptions="_chartOptions" />
+                <MudSimpleTable Dense="true" Class="mt-4">
+                    <thead>
+                        <tr><th>Date</th><th>Accuracy</th><th>Avg Speed</th><th>Practice Time</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var day in _stats.DailyStats.OrderByDescending(d => d.Date))
+                        {
+                            <tr>
+                                <td>@day.Date.ToString("MMM dd")</td>
+                                <td>@(day.Accuracy.ToString("0.0"))%</td>
+                                <td>@(day.Speed.ToString("0.0")) WPM</td>
+                                <td>@FormatTime(day.PracticeTime)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </MudSimpleTable>
+            }
+        </MudPaper>
+
+        @* Switch heatmap *@
+        <MudPaper Class="pa-4" Elevation="1">
+            <MudText Typo="Typo.h6" Class="mb-1">Switch Accuracy Heatmap</MudText>
+            <MudText Typo="Typo.body2" Class="mb-3" Style="color: #666;">
+                Color shows accuracy per switch. Complete more lessons to populate this.
+            </MudText>
+            @if (_stats.SwitchAccuracies.Count == 0)
+            {
+                <MudText Typo="Typo.body2" Style="color: #999;">No switch data yet.</MudText>
+            }
+            else
+            {
+                <SwitchHeatmap SwitchAccuracies="_stats.SwitchAccuracies" />
+            }
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    private StatsDto? _stats;
+    private bool _loading = true;
+    private List<ChartSeries> _chartSeries = [];
+    private string[] _chartLabels = [];
+    private readonly ChartOptions _chartOptions = new() { YAxisTicks = 20, MaxNumYAxisTicks = 6 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Auth.IsAuthenticated) { _loading = false; return; }
+        try
+        {
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", Auth.Token);
+            _stats = await Http.GetFromJsonAsync<StatsDto>("api/stats");
+            if (_stats?.DailyStats.Count > 0)
+            {
+                var ordered = _stats.DailyStats.OrderBy(d => d.Date).ToList();
+                _chartLabels = ordered.Select(d => d.Date.ToString("MMM dd")).ToArray();
+                _chartSeries =
+                [
+                    new ChartSeries { Name = "Accuracy %", Data = ordered.Select(d => (double)d.Accuracy).ToArray() },
+                    new ChartSeries { Name = "Speed (WPM)", Data = ordered.Select(d => (double)d.Speed).ToArray() }
+                ];
+            }
+        }
+        finally { _loading = false; }
+    }
+
+    private static string FormatTime(TimeSpan t) =>
+        t.TotalHours >= 1 ? $"{(int)t.TotalHours}h {t.Minutes}m" : $"{t.Minutes}m {t.Seconds}s";
+}

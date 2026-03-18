@@ -1,6 +1,8 @@
 using ChordCraft.Core.Entities;
 using ChordCraft.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +36,23 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             // Register InMemory DbContext
             services.AddDbContext<AppDbContext>(options =>
                 options.UseInMemoryDatabase(_dbName));
+
+            // Suppress Identity cookie redirect so unauthenticated API requests get 401 not 302→404
+            services.Configure<CookieAuthenticationOptions>(
+                IdentityConstants.ApplicationScheme,
+                options =>
+                {
+                    options.Events.OnRedirectToLogin = ctx =>
+                    {
+                        ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    };
+                    options.Events.OnRedirectToAccessDenied = ctx =>
+                    {
+                        ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        return Task.CompletedTask;
+                    };
+                });
         });
     }
 
