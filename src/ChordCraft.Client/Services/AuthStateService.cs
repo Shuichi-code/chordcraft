@@ -7,6 +7,7 @@ public class AuthStateService
     private readonly LocalStorageService _storage;
     private const string TokenKey = "chordcraft_token";
     private const string DisplayNameKey = "chordcraft_display_name";
+    private const string ExpiresAtKey = "chordcraft_expires_at";
 
     public event Action? AuthStateChanged;
 
@@ -18,8 +19,22 @@ public class AuthStateService
 
     public async Task InitializeAsync()
     {
-        Token = await _storage.GetAsync(TokenKey);
-        DisplayName = await _storage.GetAsync(DisplayNameKey);
+        var token = await _storage.GetAsync(TokenKey);
+        var expiresAtRaw = await _storage.GetAsync(ExpiresAtKey);
+        if (token is not null
+            && DateTime.TryParse(expiresAtRaw, out var expiresAt)
+            && expiresAt > DateTime.UtcNow)
+        {
+            Token = token;
+            DisplayName = await _storage.GetAsync(DisplayNameKey);
+        }
+        else if (token is not null)
+        {
+            // Token exists but is expired — clear it
+            await _storage.RemoveAsync(TokenKey);
+            await _storage.RemoveAsync(DisplayNameKey);
+            await _storage.RemoveAsync(ExpiresAtKey);
+        }
     }
 
     public async Task SetTokenAsync(AuthResponse response)
@@ -28,6 +43,7 @@ public class AuthStateService
         DisplayName = response.DisplayName;
         await _storage.SetAsync(TokenKey, response.AccessToken);
         await _storage.SetAsync(DisplayNameKey, response.DisplayName);
+        await _storage.SetAsync(ExpiresAtKey, response.ExpiresAt.ToString("O"));
         AuthStateChanged?.Invoke();
     }
 
@@ -37,6 +53,7 @@ public class AuthStateService
         DisplayName = null;
         await _storage.RemoveAsync(TokenKey);
         await _storage.RemoveAsync(DisplayNameKey);
+        await _storage.RemoveAsync(ExpiresAtKey);
         AuthStateChanged?.Invoke();
     }
 }

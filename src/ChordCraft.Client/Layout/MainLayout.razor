@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@implements IDisposable
 @using MudBlazor
 @inject AuthStateService Auth
 @inject NavigationManager Navigation
@@ -39,6 +40,11 @@
         // Auth is already initialized by App.razor before routing.
         // Only subscribe to state changes here so nav re-renders on login/logout.
         Auth.AuthStateChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        Auth.AuthStateChanged -= StateHasChanged;
     }
 
     private async Task LogoutAsync()
