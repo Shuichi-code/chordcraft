@@ -57,7 +57,24 @@
     protected override void OnParametersSet()
     {
         var doc = JsonDocument.Parse(Content);
-        text = doc.RootElement.GetProperty("text").GetString() ?? "";
+        var root = doc.RootElement;
+
+        if (root.TryGetProperty("text", out var textEl))
+        {
+            text = textEl.GetString() ?? "";
+        }
+        else if (root.TryGetProperty("wordPool", out var wordPoolEl))
+        {
+            // Play lessons store words in wordPool — join them into a typing sequence
+            text = string.Join(" ", wordPoolEl.EnumerateArray()
+                .Select(w => w.GetString() ?? "")
+                .Where(w => w.Length > 0));
+        }
+        else
+        {
+            text = "";
+        }
+
         speedGoal = SpeedGoal;
         state = new TypingState();
         UpdateActiveInput();
