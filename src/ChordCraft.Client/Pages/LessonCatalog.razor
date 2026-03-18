@@ -1,7 +1,7 @@
 @page "/lessons"
 @using MudBlazor
 @inject LessonDataService LessonData
-@inject LocalProgressService Progress
+@inject IClientProgressService Progress
 @inject NavigationManager Navigation
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
@@ -50,59 +50,70 @@
 
 @code {
     private List<PhaseDto>? phases;
-    private LocalProgressData? progressData;
     private int totalStars;
     private decimal completionPercent;
     private int? firstUncompletedLessonId;
 
+    // Per-lesson state precomputed in OnInitializedAsync
+    private Dictionary<int, int> bestStarsMap = new();
+    private HashSet<int> completedLessons = new();
+    private HashSet<int> unlockedLessons = new();
+
     protected override async Task OnInitializedAsync()
     {
         phases = await LessonData.GetPhasesAsync();
-        progressData = await Progress.LoadAsync();
         totalStars = await Progress.GetTotalStarsAsync();
 
         var totalLessons = phases?.Sum(p => p.Lessons.Count) ?? 0;
         completionPercent = await Progress.GetCompletionPercentAsync(totalLessons);
 
-        // Find the first uncompleted lesson
         if (phases is not null)
         {
-            foreach (var phase in phases)
+            var allLessons = phases.SelectMany(p => p.Lessons).OrderBy(l => l.Number).ToList();
+
+            // Precompute best stars and completion for all lessons
+            foreach (var lesson in allLessons)
             {
-                foreach (var lesson in phase.Lessons)
+                var stars = await Progress.GetBestStarsAsync(lesson.Id);
+                bestStarsMap[lesson.Id] = stars;
+                if (stars >= 1)
+                    completedLessons.Add(lesson.Id);
+            }
+
+            // Precompute unlocked lessons
+            foreach (var lesson in allLessons)
+            {
+                if (lesson.Number <= 1)
                 {
-                    if (IsLessonUnlocked(lesson) && !HasCompleted(lesson.Id))
-                    {
-                        firstUncompletedLessonId = lesson.Id;
-                        goto found;
-                    }
+                    unlockedLessons.Add(lesson.Id);
+                    continue;
+                }
+                var prevLesson = allLessons.FirstOrDefault(l => l.Number == lesson.Number - 1);
+                if (prevLesson is null || completedLessons.Contains(prevLesson.Id))
+                    unlockedLessons.Add(lesson.Id);
+            }
+
+            // Find first uncompleted lesson
+            foreach (var lesson in allLessons)
+            {
+                if (unlockedLessons.Contains(lesson.Id) && !completedLessons.Contains(lesson.Id))
+                {
+                    firstUncompletedLessonId = lesson.Id;
+                    break;
                 }
             }
-            found:;
         }
     }
 
-    private bool IsLessonUnlocked(LessonSummaryDto lesson)
-    {
-        if (lesson.Number <= 1) return true;
-        if (phases is null || progressData is null) return false;
+    private bool IsLessonUnlocked(LessonSummaryDto lesson) => unlockedLessons.Contains(lesson.Id);
 
-        // Find previous lesson
-        var allLessons = phases.SelectMany(p => p.Lessons).OrderBy(l => l.Number).ToList();
-        var prevLesson = allLessons.FirstOrDefault(l => l.Number == lesson.Number - 1);
-        if (prevLesson is null) return true;
-
-        return progressData.Progress.TryGetValue(prevLesson.Id, out var p) && p.BestStars >= 1;
-    }
-
-    private bool HasCompleted(int lessonId)
-        => progressData?.Progress.TryGetValue(lessonId, out var p) == true && p.BestStars >= 1;
+    private bool HasCompleted(int lessonId) => completedLessons.Contains(lessonId);
 
     private bool IsFirstUncompletedLesson(LessonSummaryDto lesson)
         => firstUncompletedLessonId == lesson.Id;
 
     private int GetBestStars(int lessonId)
-        => progressData?.Progress.TryGetValue(lessonId, out var p) == true ? p.BestStars : 0;
+        => bestStarsMap.TryGetValue(lessonId, out var s) ? s : 0;
 
     private void OpenLesson(LessonSummaryDto lesson, bool isUnlocked)
     {
