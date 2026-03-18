@@ -22,6 +22,28 @@ public class AuthMigrateTests : IClassFixture<CustomWebApplicationFactory>, IAsy
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
+    public async Task Login_WithValidCredentials_ReturnsToken()
+    {
+        var email = $"login_{Guid.NewGuid():N}@test.com";
+        await _client.PostAsJsonAsync("/api/auth/register",
+            new RegisterRequest(email, "Password1!", "LoginUser"));
+
+        var resp = await _client.PostAsJsonAsync("/api/auth/login",
+            new LoginRequest(email, "Password1!"));
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var auth = await resp.Content.ReadFromJsonAsync<AuthResponse>(JsonOptions);
+        Assert.NotNull(auth?.AccessToken);
+    }
+
+    [Fact]
+    public async Task Login_WithInvalidCredentials_Returns401()
+    {
+        var resp = await _client.PostAsJsonAsync("/api/auth/login",
+            new LoginRequest("nobody@test.com", "WrongPassword!"));
+        Assert.Equal(HttpStatusCode.Unauthorized, resp.StatusCode);
+    }
+
+    [Fact]
     public async Task Register_ThenMigrate_Succeeds()
     {
         // Register
