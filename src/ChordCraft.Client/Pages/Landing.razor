@@ -1,0 +1,97 @@
+@page "/"
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+    @* Hero *@
+    <MudPaper Class="pa-12 mb-8" Elevation="0"
+              Style="background: linear-gradient(135deg, #1976d2, #1565c0); color: white; border-radius: 16px;">
+        <MudText Typo="Typo.h2" Align="Align.Center" Class="mb-4" Style="font-weight: 700;">
+            Learn CharaChorder Typing
+        </MudText>
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6" Style="opacity: 0.9;">
+            The most effective way to master your CharaChorder One.
+            Structured lessons, real-time feedback, and visual guides.
+        </MudText>
+        <MudStack Row="true" Justify="Justify.Center">
+            <MudButton Variant="Variant.Filled" Color="Color.Surface"
+                       Size="Size.Large" Href="/lessons"
+                       Style="color: #1976d2; font-weight: 600;">
+                Get Started
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+
+    @* What is ChordCraft *@
+    <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-2" Style="font-weight: 600;">
+        What is ChordCraft?
+    </MudText>
+    <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-8" Style="max-width: 700px; margin: 0 auto;">
+        ChordCraft is a free, web-based typing tutor built specifically for the CharaChorder One.
+        Learn to type on your device through structured, gamified lessons — from your first switch press
+        to full directional mastery.
+    </MudText>
+
+    @* Features *@
+    <MudGrid Class="mb-8">
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="pa-4" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.School" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h6" Class="mt-2">Structured Lessons</MudText>
+                <MudText Typo="Typo.body2">50+ lessons organized into phases. Learn switch basics, then master all directional inputs.</MudText>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="pa-4" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.Keyboard" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h6" Class="mt-2">Device Visualization</MudText>
+                <MudText Typo="Typo.body2">See exactly which switch to press and in which direction with our interactive CharaChorder diagram.</MudText>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="pa-4" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.FrontHand" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h6" Class="mt-2">Finger Guides</MudText>
+                <MudText Typo="Typo.body2">Hand overlays show you which finger to use and which direction to push — just like a typing teacher.</MudText>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="pa-4" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.Star" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h6" Class="mt-2">Star Ratings</MudText>
+                <MudText Typo="Typo.body2">Earn 1-5 stars per lesson based on accuracy and speed. Keep practicing to get all five!</MudText>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="pa-4" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h6" Class="mt-2">Track Progress</MudText>
+                <MudText Typo="Typo.body2">Your progress saves automatically. Pick up right where you left off.</MudText>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="2" Class="pa-4" Style="height: 100%;">
+                <MudIcon Icon="@Icons.Material.Filled.Devices" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h6" Class="mt-2">Just Plug In</MudText>
+                <MudText Typo="Typo.body2">Works with any CharaChorder One on the default CCOS layout. No drivers needed.</MudText>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    @* How it works *@
+    <MudPaper Class="pa-8 mb-8" Elevation="1" Style="border-radius: 12px; text-align: center;">
+        <MudText Typo="Typo.h5" Class="mb-4" Style="font-weight: 600;">How Does It Work?</MudText>
+        <MudText Typo="Typo.body1" Style="max-width: 600px; margin: 0 auto;">
+            Practice each lesson until you earn all five stars. It really doesn't take much to learn —
+            a few minutes a day for one to two weeks and you'll have mastered the basics!
+        </MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                   Class="mt-6" Href="/lessons">
+            Start Learning
+        </MudButton>
+    </MudPaper>
+
+    @* Footer *@
+    <MudText Typo="Typo.caption" Align="Align.Center" Class="mb-4" Style="color: #999;">
+        ChordCraft is a free, open-source community project. Not affiliated with CharaChorder Inc.
+    </MudText>
+</MudContainer>
