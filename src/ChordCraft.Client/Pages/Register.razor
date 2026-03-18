@@ -1,0 +1,100 @@
+@page "/register"
+@using MudBlazor
+@using System.Net.Http.Json
+@using ChordCraft.Core.DTOs.Auth
+@inject HttpClient Http
+@inject AuthStateService Auth
+@inject LocalProgressService LocalProgress
+@inject LocalStorageService Storage
+@inject NavigationManager Navigation
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5">Create Account</MudText>
+                <MudText Typo="Typo.body2" Class="mt-1">
+                    Save your progress and sync across devices.
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (!string.IsNullOrEmpty(_error))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-3">@_error</MudAlert>
+            }
+            <MudTextField @bind-Value="_email" Label="Email" InputType="InputType.Email"
+                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
+            <MudTextField @bind-Value="_displayName" Label="Display Name"
+                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
+            <MudTextField @bind-Value="_password" Label="Password" InputType="InputType.Password"
+                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
+            <MudTextField @bind-Value="_confirmPassword" Label="Confirm Password" InputType="InputType.Password"
+                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
+        </MudCardContent>
+        <MudCardActions Class="px-4 pb-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                       OnClick="RegisterAsync" Disabled="_loading">
+                @(_loading ? "Creating account..." : "Create Account")
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+    <MudText Typo="Typo.body2" Class="text-center mt-3">
+        Already have an account? <MudLink Href="/login">Sign in</MudLink>
+    </MudText>
+</MudContainer>
+
+@code {
+    private string _email = "";
+    private string _displayName = "";
+    private string _password = "";
+    private string _confirmPassword = "";
+    private string _error = "";
+    private bool _loading;
+
+    private async Task RegisterAsync()
+    {
+        _error = "";
+        if (_password != _confirmPassword) { _error = "Passwords do not match."; return; }
+        _loading = true;
+        try
+        {
+            // 1. Register — RegisterRequest(Email, Password, DisplayName)
+            var regResp = await Http.PostAsJsonAsync("api/auth/register",
+                new RegisterRequest(_email, _password, _displayName));
+            if (!regResp.IsSuccessStatusCode)
+            {
+                _error = "Registration failed. Email may already be in use.";
+                return;
+            }
+            var auth = await regResp.Content.ReadFromJsonAsync<AuthResponse>();
+
+            // 2. Set token
+            await Auth.SetTokenAsync(auth!);
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth!.AccessToken);
+
+            // 3. Migrate LocalStorage progress
+            var localData = await LocalProgress.LoadAsync();
+            var progressEntries = localData.Progress.Select(kv =>
+                new MigrateProgressEntry(kv.Key, kv.Value.BestStars, kv.Value.BestAccuracy,
+                    kv.Value.BestSpeed, kv.Value.TotalAttempts)).ToList();
+            if (progressEntries.Count > 0)
+                await Http.PostAsJsonAsync("api/auth/migrate",
+                    new MigrateProgressRequest(
+                        $"session_{Guid.NewGuid():N}",
+                        progressEntries,
+                        new List<MigrateLessonAttemptEntry>()));
+
+            // 4. Clear LocalStorage progress
+            await Storage.RemoveAsync("chordcraft_progress");
+
+            Navigation.NavigateTo("/lessons");
+        }
+        catch
+        {
+            _error = "An error occurred. Please try again.";
+        }
+        finally { _loading = false; }
+    }
+}
