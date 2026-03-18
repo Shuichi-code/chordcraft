@@ -1,0 +1,15 @@
+@using MudBlazor
+
+<span class="star-display">
+    @for (int i = 1; i <= 5; i++)
+    {
+        var starNum = i;
+        <MudIcon Icon="@(starNum <= Stars ? Icons.Material.Filled.Star : Icons.Material.Outlined.StarBorder)"
+                 Size="Size" Color="@(starNum <= Stars ? Color.Warning : Color.Default)" />
+    }
+</span>
+
+@code {
+    [Parameter] public int Stars { get; set; }
+    [Parameter] public Size Size { get; set; } = Size.Small;
+}

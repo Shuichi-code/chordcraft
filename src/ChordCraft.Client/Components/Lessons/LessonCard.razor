@@ -1,0 +1,47 @@
+@using MudBlazor
+
+<MudCard Class="@CardClass" Elevation="@(IsUnlocked ? 2 : 0)" Style="@CardStyle"
+         @onclick="OnClick">
+    <MudCardContent Class="pa-3 text-center">
+        <MudText Typo="Typo.h6" Style="font-weight: 700;">@Lesson.Number</MudText>
+
+        @if (!IsUnlocked)
+        {
+            <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Medium" Color="Color.Default" />
+        }
+        else
+        {
+            <MudIcon Icon="@TypeIcon" Size="Size.Medium" Color="Color.Primary" />
+        }
+
+        <MudText Typo="Typo.caption" Class="mt-1" Style="@(IsUnlocked ? "" : "opacity: 0.5;")">
+            @Lesson.Title
+        </MudText>
+
+        @if (BestStars > 0)
+        {
+            <StarDisplay Stars="BestStars" Size="Size.Small" />
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter, EditorRequired] public LessonSummaryDto Lesson { get; set; } = null!;
+    [Parameter] public bool IsUnlocked { get; set; }
+    [Parameter] public bool IsActive { get; set; }
+    [Parameter] public int BestStars { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private string CardClass => IsActive ? "lesson-card active" : "lesson-card";
+    private string CardStyle => IsUnlocked
+        ? (IsActive ? "border: 2px solid #1976d2; cursor: pointer;" : "cursor: pointer;")
+        : "opacity: 0.6; cursor: default;";
+
+    private string TypeIcon => Lesson.Type switch
+    {
+        LessonType.Intro => Icons.Material.Filled.NewReleases,
+        LessonType.Review => Icons.Material.Filled.Search,
+        LessonType.Practice => Icons.Material.Filled.Timer,
+        _ => Icons.Material.Filled.School
+    };
+}
