@@ -1,0 +1,9 @@
+[build]
+builder = "nixpacks"
+buildCommand = "dotnet publish src/ChordCraft.Api/ChordCraft.Api.csproj -c Release -o out"
+
+[deploy]
+startCommand = "dotnet out/ChordCraft.Api.dll"
+healthcheckPath = "/api/phases"
+healthcheckTimeout = 60
+restartPolicyType = "on_failure"
