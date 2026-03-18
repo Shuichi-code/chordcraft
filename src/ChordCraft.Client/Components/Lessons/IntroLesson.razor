@@ -1,0 +1,87 @@
+@using System.Text.Json
+@using MudBlazor
+
+<div class="intro-lesson">
+    <MudText Typo="Typo.overline" Color="Color.Primary" Class="mb-2">NEW INPUT INTRODUCTION</MudText>
+
+    @if (currentStep < steps.Count)
+    {
+        var step = steps[currentStep];
+        <MudText Typo="Typo.h5" Class="mb-6">@step.Instruction</MudText>
+
+        <div style="position: relative; max-width: 800px; margin: 0 auto;">
+            <SwitchDiagram ActiveInputs="@activeInputs" />
+            <HandOverlay ActiveFingers="@activeFingers" ActiveDirection="@activeDirection" />
+        </div>
+
+        <MudText Typo="Typo.body2" Align="Align.Center" Class="mt-4" Style="color: #888;">
+            Press the correct key to continue (@(currentStep + 1) / @steps.Count)
+        </MudText>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Content { get; set; } = "{}";
+    [Parameter] public EventCallback<(decimal Accuracy, decimal Speed)> OnComplete { get; set; }
+
+    private List<IntroStep> steps = [];
+    private int currentStep;
+    private int correctCount;
+    private int totalAttempts;
+    private List<SwitchInput> activeInputs = [];
+    private List<SwitchId> activeFingers = [];
+    private SwitchDirection? activeDirection;
+
+    protected override void OnParametersSet()
+    {
+        var doc = JsonDocument.Parse(Content);
+        steps = doc.RootElement.GetProperty("steps").EnumerateArray()
+            .Select(s => new IntroStep(
+                s.GetProperty("instruction").GetString() ?? "",
+                s.GetProperty("targetInput").GetString() ?? "",
+                s.GetProperty("targetChar").GetString() ?? ""))
+            .ToList();
+        SetActiveFromStep();
+    }
+
+    private void SetActiveFromStep()
+    {
+        if (currentStep >= steps.Count) return;
+        var target = steps[currentStep];
+        if (CcosLayout.ReverseMap.TryGetValue(target.TargetChar, out var input))
+        {
+            activeInputs = [input];
+            activeFingers = [input.Switch];
+            activeDirection = input.Direction;
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnKeyDown(string key, double timestamp)
+    {
+        if (currentStep >= steps.Count) return;
+        totalAttempts++;
+
+        var expected = steps[currentStep].TargetChar;
+        if (key == expected)
+        {
+            correctCount++;
+            currentStep++;
+            if (currentStep >= steps.Count)
+            {
+                activeInputs = [];
+                activeFingers = [];
+                activeDirection = null;
+                var accuracy = totalAttempts > 0 ? (decimal)correctCount / totalAttempts : 1m;
+                await OnComplete.InvokeAsync((accuracy, 0m));
+            }
+            else
+            {
+                SetActiveFromStep();
+            }
+            StateHasChanged();
+        }
+    }
+
+    private record IntroStep(string Instruction, string TargetInput, string TargetChar);
+}

@@ -1,0 +1,46 @@
+@using MudBlazor
+
+<MudOverlay Visible="true" DarkBackground="true">
+    <MudPaper Class="pa-8" Elevation="8" Style="border-radius: 16px; text-align: center; min-width: 350px;">
+        <MudText Typo="Typo.h5" Class="mb-4" Style="font-weight: 700;">Lesson Complete!</MudText>
+
+        <div class="mb-4">
+            <StarDisplay Stars="Stars" Size="Size.Large" />
+        </div>
+
+        <MudStack Spacing="1" Class="mb-6">
+            <MudText Typo="Typo.body1">
+                Accuracy: <strong>@((Accuracy * 100).ToString("0"))%</strong>
+            </MudText>
+            @if (Speed > 0)
+            {
+                <MudText Typo="Typo.body1">
+                    Speed: <strong>@Speed.ToString("0.0") WPM</strong>
+                </MudText>
+            }
+            <MudText Typo="Typo.body1">
+                Points: <strong>@Points</strong>
+            </MudText>
+        </MudStack>
+
+        <MudStack Row="true" Justify="Justify.Center" Spacing="2">
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                       OnClick="OnRetry" Size="Size.Large">
+                Try Again
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       OnClick="OnNextLesson" Size="Size.Large">
+                Next Lesson
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+</MudOverlay>
+
+@code {
+    [Parameter] public int Stars { get; set; }
+    [Parameter] public decimal Accuracy { get; set; }
+    [Parameter] public decimal Speed { get; set; }
+    [Parameter] public int Points { get; set; }
+    [Parameter] public EventCallback OnRetry { get; set; }
+    [Parameter] public EventCallback OnNextLesson { get; set; }
+}

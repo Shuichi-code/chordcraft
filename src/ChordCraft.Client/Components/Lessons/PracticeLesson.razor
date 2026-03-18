@@ -1,0 +1,111 @@
+@using System.Text.Json
+@using MudBlazor
+
+<div class="practice-lesson">
+    <MudText Typo="Typo.overline" Color="Color.Primary" Class="mb-2">PRACTICE</MudText>
+
+    @if (speedGoal.HasValue)
+    {
+        <MudText Typo="Typo.caption" Class="mb-2" Style="color: #888;">Speed goal: @speedGoal WPM</MudText>
+    }
+
+    <div class="text-display mb-6" style="font-size: 1.4rem; font-family: monospace; line-height: 2; text-align: center; max-width: 700px; margin: 0 auto;">
+        @for (int i = 0; i < text.Length; i++)
+        {
+            var idx = i;
+            var c = text[idx];
+            string color;
+            if (idx < state.TypedCharacters.Count)
+                color = state.TypedCharacters[idx].IsCorrect ? "#4caf50" : "#f44336";
+            else if (idx == state.CurrentPosition)
+                color = "#1976d2";
+            else
+                color = "#999";
+
+            <span style="color: @color; background: @(idx == state.CurrentPosition ? "#e3f2fd" : "transparent"); font-weight: @(idx == state.CurrentPosition ? "bold" : "normal");">@(c == ' ' ? ' ' : c)</span>
+        }
+    </div>
+
+    <div style="position: relative; max-width: 800px; margin: 0 auto;">
+        <SwitchDiagram ActiveInputs="@activeInputs" />
+        <HandOverlay ActiveFingers="@activeFingers" ActiveDirection="@activeDirection" />
+    </div>
+
+    <MudStack Row="true" Justify="Justify.Center" Class="mt-4" Spacing="4">
+        <MudText Typo="Typo.body2" Style="color: #888;">
+            Accuracy: @((state.Accuracy * 100).ToString("0"))%
+        </MudText>
+        <MudText Typo="Typo.body2" Style="color: #888;">|</MudText>
+        <MudText Typo="Typo.body2" Style="color: #888;">
+            @state.CurrentPosition / @text.Length characters
+        </MudText>
+    </MudStack>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Content { get; set; } = "{}";
+    [Parameter] public int? SpeedGoal { get; set; }
+    [Parameter] public EventCallback<(decimal Accuracy, decimal Speed)> OnComplete { get; set; }
+
+    private string text = "";
+    private int? speedGoal;
+    private TypingState state = new();
+    private List<SwitchInput> activeInputs = [];
+    private List<SwitchId> activeFingers = [];
+    private SwitchDirection? activeDirection;
+
+    protected override void OnParametersSet()
+    {
+        var doc = JsonDocument.Parse(Content);
+        text = doc.RootElement.GetProperty("text").GetString() ?? "";
+        speedGoal = SpeedGoal;
+        state = new TypingState();
+        UpdateActiveInput();
+    }
+
+    private void UpdateActiveInput()
+    {
+        if (state.CurrentPosition >= text.Length) return;
+        var target = text[state.CurrentPosition].ToString();
+        if (CcosLayout.ReverseMap.TryGetValue(target, out var input))
+        {
+            activeInputs = [input];
+            activeFingers = [input.Switch];
+            activeDirection = input.Direction;
+        }
+        else
+        {
+            activeInputs = [];
+            activeFingers = [];
+            activeDirection = null;
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnKeyDown(string key, double timestamp)
+    {
+        if (state.IsComplete || state.CurrentPosition >= text.Length) return;
+        state.StartTime ??= DateTime.UtcNow;
+
+        var expected = text[state.CurrentPosition];
+        var actual = key.Length == 1 ? key[0] : ' ';
+        var isCorrect = actual == expected;
+
+        state.TypedCharacters.Add(new TypedCharacter(expected, actual, isCorrect, timestamp));
+        state.CurrentPosition++;
+
+        if (state.CurrentPosition >= text.Length)
+        {
+            state.EndTime = DateTime.UtcNow;
+            state.IsComplete = true;
+            activeInputs = [];
+            activeFingers = [];
+            await OnComplete.InvokeAsync((state.Accuracy, state.Speed));
+        }
+        else
+        {
+            UpdateActiveInput();
+        }
+        StateHasChanged();
+    }
+}

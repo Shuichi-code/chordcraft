@@ -1,0 +1,91 @@
+@using System.Text.Json
+@using MudBlazor
+
+<div class="review-lesson">
+    <MudText Typo="Typo.overline" Color="Color.Primary" Class="mb-2">REVIEW</MudText>
+
+    <div class="char-display mb-6" style="font-size: 2rem; font-family: monospace; text-align: center; letter-spacing: 8px;">
+        @for (int i = 0; i < sequence.Count; i++)
+        {
+            var idx = i;
+            var c = sequence[idx];
+            string color;
+            if (idx < typedResults.Count)
+                color = typedResults[idx] ? "#4caf50" : "#f44336";
+            else if (idx == currentPos)
+                color = "#1976d2";
+            else
+                color = "#ccc";
+
+            <span style="color: @color; font-weight: @(idx == currentPos ? "bold" : "normal"); text-decoration: @(idx == currentPos ? "underline" : "none");">@(c == " " ? "␣" : c.ToString())</span>
+        }
+    </div>
+
+    <div style="position: relative; max-width: 800px; margin: 0 auto;">
+        <SwitchDiagram ActiveInputs="@activeInputs" />
+        <HandOverlay ActiveFingers="@activeFingers" ActiveDirection="@activeDirection" />
+    </div>
+
+    <MudText Typo="Typo.body2" Align="Align.Center" Class="mt-4" Style="color: #888;">
+        @currentPos / @sequence.Count
+    </MudText>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Content { get; set; } = "{}";
+    [Parameter] public EventCallback<(decimal Accuracy, decimal Speed)> OnComplete { get; set; }
+
+    private List<string> sequence = [];
+    private int currentPos;
+    private List<bool> typedResults = [];
+    private DateTime? startTime;
+    private List<SwitchInput> activeInputs = [];
+    private List<SwitchId> activeFingers = [];
+    private SwitchDirection? activeDirection;
+
+    protected override void OnParametersSet()
+    {
+        var doc = JsonDocument.Parse(Content);
+        sequence = doc.RootElement.GetProperty("sequence").EnumerateArray()
+            .Select(s => s.GetString() ?? "").ToList();
+        UpdateActiveInput();
+    }
+
+    private void UpdateActiveInput()
+    {
+        if (currentPos >= sequence.Count) return;
+        var target = sequence[currentPos];
+        if (CcosLayout.ReverseMap.TryGetValue(target, out var input))
+        {
+            activeInputs = [input];
+            activeFingers = [input.Switch];
+            activeDirection = input.Direction;
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnKeyDown(string key, double timestamp)
+    {
+        if (currentPos >= sequence.Count) return;
+        startTime ??= DateTime.UtcNow;
+
+        var expected = sequence[currentPos];
+        typedResults.Add(key == expected);
+        currentPos++;
+
+        if (currentPos >= sequence.Count)
+        {
+            activeInputs = [];
+            activeFingers = [];
+            var elapsed = (DateTime.UtcNow - startTime.Value).TotalMinutes;
+            var accuracy = (decimal)typedResults.Count(r => r) / typedResults.Count;
+            var wpm = elapsed > 0 ? (decimal)(typedResults.Count / 5.0 / elapsed) : 0m;
+            await OnComplete.InvokeAsync((accuracy, wpm));
+        }
+        else
+        {
+            UpdateActiveInput();
+        }
+        StateHasChanged();
+    }
+}
