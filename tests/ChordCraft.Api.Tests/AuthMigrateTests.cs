@@ -100,4 +100,21 @@ public class AuthMigrateTests : IClassFixture<CustomWebApplicationFactory>, IAsy
         var resp = await freshClient.GetAsync("/api/stats");
         Assert.Equal(HttpStatusCode.Unauthorized, resp.StatusCode);
     }
+
+    [Fact]
+    public async Task Badges_AuthenticatedUser_ReturnsBadgeList()
+    {
+        var email = $"badges_{Guid.NewGuid():N}@test.com";
+        var regResp = await _client.PostAsJsonAsync("/api/auth/register",
+            new RegisterRequest(email, "Password1!", "BadgeUser"));
+        var auth = await regResp.Content.ReadFromJsonAsync<AuthResponse>(JsonOptions);
+        _client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth!.AccessToken);
+
+        var resp = await _client.GetAsync("/api/badges");
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var badges = await resp.Content.ReadFromJsonAsync<List<ChordCraft.Core.DTOs.Badges.BadgeDto>>(JsonOptions);
+        Assert.NotNull(badges);
+        Assert.True(badges!.Count > 0);
+    }
 }

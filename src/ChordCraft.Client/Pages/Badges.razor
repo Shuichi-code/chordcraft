@@ -1,0 +1,103 @@
+@page "/badges"
+@using MudBlazor
+@using System.Net.Http.Json
+@using System.Net.Http.Headers
+@using ChordCraft.Core.DTOs.Badges
+@inject HttpClient Http
+@inject AuthStateService Auth
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Badges</MudText>
+
+    @if (!Auth.IsAuthenticated)
+    {
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            <MudText>Sign up to earn badges and track achievements.</MudText>
+            <MudStack Row="true" Spacing="2" Class="mt-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/register">Sign Up Free</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/login">Log In</MudButton>
+            </MudStack>
+        </MudAlert>
+        @* Show locked preview for anonymous users *@
+        <MudGrid>
+            @for (int i = 0; i < 8; i++)
+            {
+                <MudItem xs="6" sm="4" md="3">
+                    <MudCard Elevation="1" Style="opacity: 0.3;">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Large" Color="Color.Default" />
+                            <MudText Typo="Typo.subtitle2" Class="mt-2">???</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+    else if (_loading)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" Class="mx-auto d-block mt-8" />
+    }
+    else if (_badges is not null)
+    {
+        var earned = _badges.Where(b => b.Earned).ToList();
+        var unearned = _badges.Where(b => !b.Earned).ToList();
+
+        @if (earned.Count > 0)
+        {
+            <MudText Typo="Typo.h6" Class="mb-3">Earned (@earned.Count)</MudText>
+            <MudGrid Class="mb-6">
+                @foreach (var badge in earned)
+                {
+                    <MudItem xs="6" sm="4" md="3">
+                        <MudCard Elevation="2">
+                            <MudCardContent Class="text-center pa-4">
+                                <MudIcon Icon="@Icons.Material.Filled.EmojiEvents" Size="Size.Large" Color="Color.Warning" />
+                                <MudText Typo="Typo.subtitle2" Class="mt-2">@badge.Name</MudText>
+                                <MudText Typo="Typo.caption" Style="color: #666;">@badge.Description</MudText>
+                                @if (badge.EarnedAt.HasValue)
+                                {
+                                    <MudText Typo="Typo.caption" Style="color: #999;" Class="mt-1">
+                                        @badge.EarnedAt.Value.ToString("MMM dd, yyyy")
+                                    </MudText>
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+
+        <MudText Typo="Typo.h6" Class="mb-3">Not Yet Earned (@unearned.Count)</MudText>
+        <MudGrid>
+            @foreach (var badge in unearned)
+            {
+                <MudItem xs="6" sm="4" md="3">
+                    <MudCard Elevation="1" Style="opacity: 0.6;">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Large" Color="Color.Default" />
+                            <MudText Typo="Typo.subtitle2" Class="mt-2">@badge.Name</MudText>
+                            <MudText Typo="Typo.caption" Style="color: #666;">@badge.Description</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private List<BadgeDto>? _badges;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Auth.IsAuthenticated) { _loading = false; return; }
+        try
+        {
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", Auth.Token);
+            _badges = await Http.GetFromJsonAsync<List<BadgeDto>>("api/badges");
+        }
+        finally { _loading = false; }
+    }
+}
