@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Pin NuGet restore root config to the solution directory so all projects
+         resolve NuGet.Config consistently regardless of working directory. -->
+    <RestoreRootConfigDirectory>$(MSBuildThisFileDirectory)</RestoreRootConfigDirectory>
+  </PropertyGroup>
+</Project>
