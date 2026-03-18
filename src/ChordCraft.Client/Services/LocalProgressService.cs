@@ -4,7 +4,7 @@ using ChordCraft.Core.Scoring;
 
 namespace ChordCraft.Client.Services;
 
-public class LocalProgressService
+public class LocalProgressService : IClientProgressService
 {
     private readonly LocalStorageService _storage;
     private const string StorageKey = "chordcraft_progress";
@@ -80,5 +80,17 @@ public class LocalProgressService
         var data = await LoadAsync();
         var completed = data.Progress.Values.Count(p => p.BestStars >= 1);
         return totalLessons > 0 ? (decimal)completed / totalLessons * 100 : 0;
+    }
+
+    public async Task<int> GetBestStarsAsync(int lessonId)
+    {
+        var data = await LoadAsync();
+        return data.Progress.TryGetValue(lessonId, out var entry) ? entry.BestStars : 0;
+    }
+
+    public async Task<bool> HasCompletedAsync(int lessonId)
+    {
+        var data = await LoadAsync();
+        return data.Progress.TryGetValue(lessonId, out var entry) && entry.BestStars >= 1;
     }
 }
