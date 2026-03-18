@@ -12,6 +12,40 @@ Beginner CharaChorder One users who have just purchased the device and need stru
 
 CharaChorder One only, using the default CCOS layout. Custom keymaps are out of scope.
 
+### CCOS Default Layout Reference
+
+The CharaChorder One has 18 switches (9 per hand). Each switch has 5 inputs: push (press down), up, down, left, right. This gives 90 total inputs. The default CCOS mapping:
+
+**Left Hand:**
+
+| Switch | Push | Up | Down | Left | Right |
+|--------|------|----|------|------|-------|
+| L-Pinky | a | q | z | 1 | ! |
+| L-Ring | s | w | x | 2 | @ |
+| L-Middle | d | e | c | 3 | # |
+| L-Index | f | r | v | g | t |
+| L-Thumb | Space | Backspace | Tab | Delete | Enter |
+| L-ThumbInner | Shift | Ctrl | Alt | GUI | Esc |
+| L-Palm-Upper | ( | [ | { | < | / |
+| L-Palm-Lower | ) | ] | } | > | \ |
+| L-Edge | - | _ | = | + | ` |
+
+**Right Hand:**
+
+| Switch | Push | Up | Down | Left | Right |
+|--------|------|----|------|------|-------|
+| R-Thumb | Space | Backspace | Tab | Enter | Delete |
+| R-ThumbInner | Shift | Ctrl | Alt | Esc | GUI |
+| R-Index | j | u | m | h | y |
+| R-Middle | k | i | , | 8 | * |
+| R-Ring | l | o | . | 9 | ( |
+| R-Pinky | ; | p | / | 0 | ) |
+| R-Palm-Upper | ' | " | : | ? | | |
+| R-Palm-Lower | 4 | 5 | 6 | 7 | & |
+| R-Edge | $ | % | ^ | ~ | ` |
+
+> **Note:** This mapping is based on the CCOS default as of early 2026. The exact mapping will be verified against CharaChorder's official documentation during implementation. Minor corrections may be needed.
+
 ---
 
 ## Pages & Navigation
@@ -55,7 +89,15 @@ The main hub showing all lessons organized by phase. This is the first page user
 - First unlocked incomplete lesson is visually highlighted with a tooltip: "Click the lesson to begin"
 - Decorative artwork between phase sections (similar to TypingClub's ice/jungle theme artwork)
 
-**Placement test:** Optional shortcut button visible on the catalog page, allowing experienced users to skip ahead based on demonstrated proficiency.
+**Placement test:** Optional shortcut button visible on the catalog page, allowing experienced users to skip ahead.
+
+**Placement test details:**
+- The test consists of 3 timed sections:
+  1. **CCE basics** (60s) — type a mix of characters covering all switch push directions. If accuracy >= 80%, unlocks through Phase 1.
+  2. **Full CCE** (90s) — type words/sentences using all directional inputs. If accuracy >= 80% and WPM >= 10, unlocks through Phase 2. If WPM >= 20, also unlocks through Phase 3.
+  3. **Chording** (60s) — prompted with common words; if the user produces chord outputs (detected via the chord buffer), unlocks into Phase 4 at the appropriate lesson.
+- Each section is optional — the user can skip sections they're not ready for.
+- Results submitted via `POST /api/placement-test` (or stored in LocalStorage for anonymous users), which bulk-creates UserProgress records for all skipped lessons with `BestStars = 1`.
 
 ### 3. Typing Interface (`/lessons/{id}`)
 
@@ -75,7 +117,7 @@ The core lesson experience where users practice typing on their CharaChorder One
    - For typing lessons: the target text/characters to type, with cursor highlighting the current character, typed characters shown in green (correct) or red (incorrect)
 
 3. **CharaChorder One device visualization:**
-   - Compact circle diagram: 18 circles arranged as two groups of 5 (left hand, right hand) with 4 extra for additional thumb/palm switches
+   - Compact circle diagram: 18 circles total, arranged as 9 per hand (pinky, ring, middle, index, thumb, thumb-inner, palm-upper, palm-lower, edge)
    - Each circle shows the "push" character by default (the most common/home direction)
    - When a switch is the active target, it glows blue and a popup expands above it showing all 5 directional mappings (up/down/left/right/push) with the target direction highlighted
    - Inactive switches are dimmed gray
@@ -153,20 +195,29 @@ Achievement system for motivation and engagement.
 | Marathon Runner | Practice for 30 minutes in a single session |
 | Perfectionist | Earn 5 stars on 10 lessons |
 | Full Layout | Demonstrate proficiency on all 90 CCOS inputs |
-| The Heavyweight | Earn 5 gold stars in one day on 5 different lessons |
+| The Heavyweight | Earn 5 stars on 5 different lessons in one day |
 | Keyboard Crusher | Rack up 100 total lesson attempts |
 
 ### 6. Authentication
 
 **Anonymous flow:**
 - Users can start lessons immediately without signing up
-- Progress saved to browser LocalStorage with a generated SessionId
-- Prompt to create account appears periodically ("Save your progress!")
+- A unique SessionId is generated and stored in LocalStorage on first visit
+- Progress is stored **client-side only** in LocalStorage (no server calls for anonymous users)
+- The Blazor WASM app reads/writes progress directly from LocalStorage via JS interop
+- Prompt to create account appears periodically ("Save your progress — sign up to sync across devices!")
+- Risk: clearing browser data loses all anonymous progress (this is intentional to incentivize signup)
 
 **Authenticated flow:**
 - Email/password registration via ASP.NET Core Identity
-- On signup, any existing LocalStorage progress is migrated to the server
-- Login persists progress across devices
+- On signup, the client sends all LocalStorage progress to the server via `POST /api/auth/migrate` as a one-time bulk transfer
+- After migration, all subsequent progress is saved server-side via API calls
+- LocalStorage is cleared after successful migration to avoid dual-write confusion
+- Login persists progress across devices via server-side storage
+
+**Data flow summary:**
+- Anonymous: Blazor WASM ↔ LocalStorage only (no API calls for progress)
+- Authenticated: Blazor WASM ↔ .NET API ↔ PostgreSQL
 
 ---
 
@@ -422,6 +473,56 @@ ChordEntry (static reference table)
 └── Category: string (e.g., "common-words", "phrases")
 ```
 
+### Lesson Content JSON Schemas
+
+The `Content` field on `Lesson` is a JSON string whose structure varies by lesson type:
+
+**Intro:**
+```json
+{
+  "steps": [
+    { "instruction": "Push the left index switch up to type r",
+      "targetInput": "L-Index-Up",
+      "targetChar": "r" }
+  ]
+}
+```
+
+**Review:**
+```json
+{
+  "sequence": ["f", "j", "d", "k", "f", "j", "f", "k", "d", "j"],
+  "description": "Type each character as it appears"
+}
+```
+
+**Practice:**
+```json
+{
+  "text": "the quick brown fox jumps over the lazy dog",
+  "timeLimitSeconds": 120
+}
+```
+
+**Play:**
+```json
+{
+  "gameType": "falling-characters | word-race | speed-test",
+  "timeLimitSeconds": 60,
+  "allowedInputs": ["L-Index-Push", "R-Index-Push", "L-Middle-Push"],
+  "wordPool": ["the", "and", "for", "are"]
+}
+```
+
+**Video:**
+```json
+{
+  "videoUrl": "https://storage.example.com/videos/intro-to-charachorder.mp4",
+  "durationSeconds": 120,
+  "completionThreshold": 0.9
+}
+```
+
 ### Unlock Logic
 
 A lesson with `Number = N` is unlocked when:
@@ -433,19 +534,37 @@ A lesson with `Number = N` is unlocked when:
 
 Stars are awarded based on accuracy and speed relative to the lesson's goals:
 
+**For lessons with a SpeedGoal (Practice, Play):**
+
+| Stars | Criteria |
+|-------|----------|
+| 1 | Accuracy >= PassAccuracyThreshold |
+| 2 | Accuracy >= 85% AND Speed >= 50% of SpeedGoal |
+| 3 | Accuracy >= 90% AND Speed >= 70% of SpeedGoal |
+| 4 | Accuracy >= 95% AND Speed >= 85% of SpeedGoal |
+| 5 | Accuracy >= 98% AND Speed >= SpeedGoal |
+
+**For lessons without a SpeedGoal (Intro, Review):**
+
 | Stars | Criteria |
 |-------|----------|
 | 1 | Accuracy >= PassAccuracyThreshold |
 | 2 | Accuracy >= 85% |
 | 3 | Accuracy >= 90% |
 | 4 | Accuracy >= 95% |
-| 5 | Accuracy >= 98% AND Speed >= SpeedGoal (if set) |
+| 5 | Accuracy >= 98% |
+
+**Video lessons:** Automatically awarded 1 star and marked complete when the video reaches >= 90% of its duration.
 
 ### Points Calculation
 
-`Points = Stars * 10 + (Accuracy% - 80) * 2 + min(Speed, SpeedGoal) / SpeedGoal * 20`
+Points are only calculated for lessons that have been passed (at least 1 star):
 
-Capped at 100 points per lesson attempt. Only awarded if the lesson is passed.
+- **If SpeedGoal is set:** `Points = Stars * 10 + (Accuracy% - 80) * 2 + min(Speed, SpeedGoal) / SpeedGoal * 20`
+- **If SpeedGoal is null:** `Points = Stars * 10 + (Accuracy% - 80) * 2`
+- **Video lessons:** Fixed 10 points on completion.
+
+Capped at 100 points per lesson attempt.
 
 ---
 
@@ -533,6 +652,9 @@ C:\Developer\chordcraft\
 - `GET /api/badges` — list all badges with earned status
 - Badge awarding happens server-side: after each attempt submission, the API checks badge criteria and awards any newly earned badges. The response to `POST /api/attempts` includes any new badges earned.
 
+### Placement Test
+- `POST /api/placement-test` — submit placement test results, bulk-unlock lessons
+
 ### Chords
 - `GET /api/chords?phase=4` — get chord library for a phase/difficulty level
 
@@ -546,7 +668,13 @@ The Blazor WASM app captures raw `keydown`/`keyup` events via JS interop. The Ch
 
 **For CCE lessons:** Each keypress is matched against the expected character. Correct = advance cursor + green highlight. Incorrect = red highlight + error count.
 
-**For chord lessons:** The app watches for a burst of near-simultaneous keypresses (the CharaChorder firmware handles the chord resolution and sends the output word as a rapid sequence of keystrokes). The app compares the received word against the expected chord output.
+**For chord lessons:** The CharaChorder One firmware handles chord resolution internally — when the user presses a chord, the device sends the output word as a rapid burst of individual keystrokes over USB HID. The app does **not** need to detect simultaneity. Instead:
+1. The app collects incoming characters into a buffer
+2. When no new keypress arrives within `ChordBufferTimeoutMs` (default: 80ms, configurable), the buffer is flushed and compared as a complete word against the expected chord output
+3. If the buffered word matches the expected output, the chord is marked correct
+4. If the buffered characters don't form the expected word, they are treated as individual CCE inputs and scored accordingly
+
+This approach works because the CC1 firmware sends chord output characters in rapid succession (~1-5ms apart), while human CCE typing has gaps of 50-200ms+ between characters. The 80ms timeout reliably distinguishes the two modes.
 
 ### Lesson Locking
 
@@ -557,9 +685,10 @@ The Blazor WASM app captures raw `keydown`/`keyup` events via JS interop. The Ch
 ### Anonymous Progress
 
 - On first visit, a unique SessionId is generated and stored in LocalStorage
-- All progress is saved locally under this SessionId
-- API calls include the SessionId header for anonymous users
-- On account creation, `POST /api/auth/migrate` transfers all progress from the SessionId to the new user account
+- All progress (UserProgress, LessonAttempts, earned badges) is stored as JSON in LocalStorage — no API calls
+- The Blazor WASM app reads/writes progress via a `LocalProgressService` that mirrors the server-side data structures
+- On account creation, the client sends the full LocalStorage dataset to `POST /api/auth/migrate`, which creates the corresponding server-side records
+- After successful migration, LocalStorage progress data is cleared; the app switches to API-based storage
 
 ### Sound Effects
 
