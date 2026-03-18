@@ -1,3 +1,18 @@
 ﻿@inherits LayoutComponentBase
+@using MudBlazor
 
-@Body
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudText Typo="Typo.h5" Class="ml-3">ChordCraft</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Text" Color="Color.Inherit">Get Started</MudButton>
+    </MudAppBar>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
