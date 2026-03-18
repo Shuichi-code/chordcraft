@@ -14,5 +14,8 @@ builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<AudioService>();
 builder.Services.AddScoped<LessonDataService>();
 builder.Services.AddScoped<LocalProgressService>();
+builder.Services.AddScoped<AuthStateService>();
+builder.Services.AddScoped<ApiProgressService>();
+builder.Services.AddScoped<IClientProgressService, ProgressRouterService>();
 
 await builder.Build().RunAsync();
