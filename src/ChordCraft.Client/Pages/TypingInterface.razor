@@ -1,0 +1,165 @@
+@page "/lessons/{LessonId:int}"
+@using MudBlazor
+@using ChordCraft.Core.Scoring
+@implements IAsyncDisposable
+@inject LessonDataService LessonData
+@inject LocalProgressService Progress
+@inject AudioService Audio
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-2">
+    @* Top bar *@
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="GoBack" />
+        <MudText Typo="Typo.h6">@lesson?.Title</MudText>
+        <MudStack Row="true" Spacing="1">
+            <MudIconButton Icon="@(soundEnabled ? Icons.Material.Filled.VolumeUp : Icons.Material.Filled.VolumeOff)"
+                           OnClick="ToggleSound" />
+        </MudStack>
+    </MudStack>
+
+    @if (lesson is null)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" Class="mx-auto d-block mt-8" />
+    }
+    else if (showResults)
+    {
+        <LessonResults Stars="resultStars" Accuracy="resultAccuracy" Speed="resultSpeed" Points="resultPoints"
+                       OnRetry="Retry" OnNextLesson="NextLesson" />
+    }
+    else
+    {
+        @switch (lesson.Type)
+        {
+            case LessonType.Intro:
+                <IntroLesson @ref="introRef" Content="@lesson.Content" OnComplete="OnLessonComplete" />
+                break;
+            case LessonType.Review:
+                <ReviewLesson @ref="reviewRef" Content="@lesson.Content" OnComplete="OnLessonComplete" />
+                break;
+            case LessonType.Practice:
+                <PracticeLesson @ref="practiceRef" Content="@lesson.Content" SpeedGoal="@lesson.SpeedGoal"
+                                OnComplete="OnLessonComplete" />
+                break;
+        }
+    }
+
+    @* Bottom nav *@
+    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mt-6 mb-4">
+        <MudButton Variant="Variant.Outlined" OnClick="PrevLesson" Disabled="@(LessonId <= 1)">
+            Previous
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="SkipLesson">
+            Skip
+        </MudButton>
+    </MudStack>
+</MudContainer>
+
+@code {
+    [Parameter] public int LessonId { get; set; }
+
+    private LessonDetailDto? lesson;
+    private DotNetObjectReference<TypingInterface>? dotNetRef;
+    private bool soundEnabled = true;
+    private bool showResults;
+    private int resultStars;
+    private decimal resultAccuracy;
+    private decimal resultSpeed;
+    private int resultPoints;
+
+    private IntroLesson? introRef;
+    private ReviewLesson? reviewRef;
+    private PracticeLesson? practiceRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Audio.InitAsync();
+        lesson = await LessonData.GetLessonAsync(LessonId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("ChordCraftInput.register", dotNetRef);
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnKeyDown(string key, double timestamp)
+    {
+        if (showResults || lesson is null) return;
+
+        // Forward to active lesson component
+        switch (lesson.Type)
+        {
+            case LessonType.Intro:
+                if (introRef is not null) await introRef.OnKeyDown(key, timestamp);
+                break;
+            case LessonType.Review:
+                if (reviewRef is not null) await reviewRef.OnKeyDown(key, timestamp);
+                break;
+            case LessonType.Practice:
+                if (practiceRef is not null) await practiceRef.OnKeyDown(key, timestamp);
+                break;
+        }
+
+        if (soundEnabled)
+            await Audio.PlayKeypressAsync();
+    }
+
+    private async Task OnLessonComplete((decimal Accuracy, decimal Speed) result)
+    {
+        if (lesson is null) return;
+
+        resultAccuracy = result.Accuracy;
+        resultSpeed = result.Speed;
+        resultStars = ScoringCalculator.CalculateStars(
+            result.Accuracy, result.Speed, lesson.PassAccuracyThreshold, lesson.SpeedGoal);
+        resultPoints = ScoringCalculator.CalculatePoints(
+            resultStars, result.Accuracy, result.Speed, lesson.SpeedGoal, lesson.Type);
+
+        await Progress.RecordAttemptAsync(lesson.Id, resultAccuracy, resultSpeed, resultStars);
+
+        if (resultStars > 0 && soundEnabled)
+            await Audio.PlaySuccessAsync();
+
+        showResults = true;
+        StateHasChanged();
+    }
+
+    private async Task Retry()
+    {
+        showResults = false;
+        lesson = await LessonData.GetLessonAsync(LessonId);
+        StateHasChanged();
+    }
+
+    private void NextLesson()
+    {
+        Navigation.NavigateTo($"/lessons/{LessonId + 1}");
+    }
+
+    private void PrevLesson()
+    {
+        if (LessonId > 1)
+            Navigation.NavigateTo($"/lessons/{LessonId - 1}");
+    }
+
+    private void SkipLesson() => NextLesson();
+
+    private void GoBack() => Navigation.NavigateTo("/lessons");
+
+    private async Task ToggleSound()
+    {
+        soundEnabled = await Audio.ToggleAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JS.InvokeVoidAsync("ChordCraftInput.unregister");
+        dotNetRef?.Dispose();
+    }
+}
