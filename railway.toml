@@ -2,6 +2,4 @@
 builder = "dockerfile"
 
 [deploy]
-healthcheckPath = "/api/phases"
-healthcheckTimeout = 60
 restartPolicyType = "on_failure"
