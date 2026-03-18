@@ -1,0 +1,68 @@
+<g class="direction-popup" transform="translate(0, -75)">
+    <rect x="-45" y="-35" width="90" height="70" rx="8" ry="8"
+          fill="#2d3748" stroke="#1976d2" stroke-width="1.5" opacity="0.95" />
+
+    @* Up *@
+    <text text-anchor="middle" y="-18"
+          fill="@(ActiveDirection == SwitchDirection.Up ? "#4fc3f7" : "#aaa")"
+          font-size="@(ActiveDirection == SwitchDirection.Up ? "12" : "10")"
+          font-weight="@(ActiveDirection == SwitchDirection.Up ? "bold" : "normal")">
+        @GetChar(SwitchDirection.Up)
+    </text>
+
+    @* Left / Push / Right *@
+    <text text-anchor="end" x="-12" y="5"
+          fill="@(ActiveDirection == SwitchDirection.Left ? "#4fc3f7" : "#aaa")"
+          font-size="@(ActiveDirection == SwitchDirection.Left ? "12" : "10")"
+          font-weight="@(ActiveDirection == SwitchDirection.Left ? "bold" : "normal")">
+        @GetChar(SwitchDirection.Left)
+    </text>
+
+    <text text-anchor="middle" y="5"
+          fill="@(ActiveDirection == SwitchDirection.Push ? "#4fc3f7" : "#ccc")"
+          font-size="@(ActiveDirection == SwitchDirection.Push ? "13" : "11")"
+          font-weight="bold">
+        @GetChar(SwitchDirection.Push)
+    </text>
+
+    <text text-anchor="start" x="12" y="5"
+          fill="@(ActiveDirection == SwitchDirection.Right ? "#4fc3f7" : "#aaa")"
+          font-size="@(ActiveDirection == SwitchDirection.Right ? "12" : "10")"
+          font-weight="@(ActiveDirection == SwitchDirection.Right ? "bold" : "normal")">
+        @GetChar(SwitchDirection.Right)
+    </text>
+
+    @* Down *@
+    <text text-anchor="middle" y="28"
+          fill="@(ActiveDirection == SwitchDirection.Down ? "#4fc3f7" : "#aaa")"
+          font-size="@(ActiveDirection == SwitchDirection.Down ? "12" : "10")"
+          font-weight="@(ActiveDirection == SwitchDirection.Down ? "bold" : "normal")">
+        @GetChar(SwitchDirection.Down)
+    </text>
+
+    @* Arrow pointing down to switch *@
+    <line x1="0" y1="35" x2="0" y2="45" stroke="#1976d2" stroke-width="1.5" />
+</g>
+
+@code {
+    [Parameter, EditorRequired] public SwitchId SwitchId { get; set; }
+    [Parameter] public SwitchDirection? ActiveDirection { get; set; }
+
+    private string GetChar(SwitchDirection dir)
+    {
+        var val = CcosLayout.Map.GetValueOrDefault(new SwitchInput(SwitchId, dir)) ?? "?";
+        if (val.Length == 1 && char.IsControl(val[0]))
+        {
+            return dir switch
+            {
+                SwitchDirection.Push => "SPC",
+                SwitchDirection.Up => "BS",
+                SwitchDirection.Down => "TAB",
+                SwitchDirection.Left => "DEL",
+                SwitchDirection.Right => "ENT",
+                _ => "?"
+            };
+        }
+        return val.Length > 3 ? val[..3] : val;
+    }
+}
