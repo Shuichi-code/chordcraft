@@ -1,5 +1,7 @@
 @inherits LayoutComponentBase
 @using MudBlazor
+@inject AuthStateService Auth
+@inject NavigationManager Navigation
 
 <MudThemeProvider Theme="_theme" />
 <MudPopoverProvider />
@@ -13,6 +15,18 @@
         </MudText>
         <MudSpacer />
         <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/lessons">Lessons</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/stats">Stats</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/badges">Badges</MudButton>
+        @if (Auth.IsAuthenticated)
+        {
+            <MudText Typo="Typo.body2" Class="mx-2" Style="opacity:0.7">@Auth.DisplayName</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="LogoutAsync">Logout</MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/login">Login</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Warning" Href="/register" Class="ml-1">Save Progress</MudButton>
+        }
     </MudAppBar>
     <MudMainContent>
         @Body
@@ -20,7 +34,18 @@
 </MudLayout>
 
 @code {
-    [Inject] private NavigationManager Navigation { get; set; } = null!;
+    protected override void OnInitialized()
+    {
+        // Auth is already initialized by App.razor before routing.
+        // Only subscribe to state changes here so nav re-renders on login/logout.
+        Auth.AuthStateChanged += StateHasChanged;
+    }
+
+    private async Task LogoutAsync()
+    {
+        await Auth.ClearAsync();
+        Navigation.NavigateTo("/");
+    }
 
     private readonly MudTheme _theme = new()
     {
