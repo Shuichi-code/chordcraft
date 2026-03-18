@@ -12,6 +12,56 @@ Beginner CharaChorder One users who have just purchased the device and need stru
 
 CharaChorder One only, using the default CCOS layout. Custom keymaps are out of scope.
 
+### Business Model
+
+Free, open-source community project. No paid tier planned for launch. If CharaChorder Inc. expresses interest in partnership or sponsorship, that can be explored post-launch.
+
+### Competitive Context
+
+CharaChorder provides its own online trainer at charachorder.com, which offers basic typing practice. ChordCraft differentiates with:
+- Structured curriculum (not just free-form practice)
+- Gamification (stars, badges, progress tracking) modeled after TypingClub's proven approach
+- Visual device diagram with directional finger guides
+- Per-switch accuracy heatmap for targeted improvement
+
+### Success Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Activation rate | 60%+ | % of visitors who complete lesson 1 |
+| 7-day retention | 30%+ | % of users returning within 7 days |
+| Phase 1 completion | 20%+ | % of activated users completing all 15 Phase 1 lessons |
+| Median stars per lesson | 2-3 | Difficulty calibration signal; below 2 = too hard, above 4 = too easy |
+
+### MVP Definition
+
+**MVP scope (Phase 1 launch):**
+- Lessons 1-50 (Phases 1-2: Switch Basics + Directional Inputs)
+- Lesson types: Intro, Review, Practice only (no Play or Video)
+- Video lessons replaced with illustrated text step-by-step guides
+- Anonymous progress via LocalStorage (no accounts, no API calls)
+- Landing page + lesson catalog + typing interface
+- Device visualization with hand overlay
+- Basic star scoring per lesson
+- No badges, no stats page, no placement test, no chording
+
+**Post-MVP (in priority order):**
+1. Account creation + API-based progress (enables cross-device sync)
+2. Stats page with per-switch heatmap
+3. Phase 3: CCE Speed Building (lessons 51-80)
+4. Badges and gamification
+5. Play-type game lessons
+6. Phase 4-5: Chording (requires verified chord library)
+7. Placement test
+8. Video lesson production
+
+### Content Strategy
+
+Lesson content (JSON) for the MVP's 50 lessons will be authored manually. For post-MVP expansion:
+- A CLI lesson validator tool will be built to check Content JSON schema compliance
+- Chord library will be sourced from CharaChorder's official documentation and verified against firmware before Phase 4 development begins
+- Video lessons are deferred entirely; replaced with illustrated text guides until production resources are available
+
 ### CCOS Default Layout Reference
 
 The CharaChorder One has 18 switches (9 per hand). Each switch has 5 inputs: push (press down), up, down, left, right. This gives 90 total inputs. The default CCOS mapping:

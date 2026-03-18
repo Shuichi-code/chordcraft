@@ -359,7 +359,7 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidateLifetimeExpiry = true,
+            ValidateLifetime = true,
             ValidIssuer = config["Jwt:Issuer"],
             ValidAudience = config["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
@@ -845,12 +845,13 @@ Migrations run automatically on startup in development. In production, migration
 
 ```csharp
 // Program.cs
-if (app.Environment.IsProduction())
+if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
 }
+// Production: Migrations applied via CI pipeline or Railway deploy command
 ```
 
 ---
