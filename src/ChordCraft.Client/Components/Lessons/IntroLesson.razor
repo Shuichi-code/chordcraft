@@ -10,8 +10,7 @@
         <MudText Typo="Typo.h5" Class="mb-6">@step.Instruction</MudText>
 
         <div style="position: relative; max-width: 800px; margin: 0 auto;">
-            <SwitchDiagram ActiveInputs="@activeInputs" />
-            <HandOverlay ActiveFingers="@activeFingers" ActiveDirection="@activeDirection" />
+            <ChordInspector ActiveInputs="@activeInputs" />
         </div>
 
         <MudText Typo="Typo.body2" Align="Align.Center" Class="mt-4" Style="color: #888;">
@@ -29,8 +28,6 @@
     private int correctCount;
     private int totalAttempts;
     private List<SwitchInput> activeInputs = [];
-    private List<SwitchId> activeFingers = [];
-    private SwitchDirection? activeDirection;
 
     protected override void OnParametersSet()
     {
@@ -51,8 +48,6 @@
         if (CcosLayout.ReverseMap.TryGetValue(target.TargetChar, out var input))
         {
             activeInputs = [input];
-            activeFingers = [input.Switch];
-            activeDirection = input.Direction;
         }
     }
 
@@ -70,8 +65,6 @@
             if (currentStep >= steps.Count)
             {
                 activeInputs = [];
-                activeFingers = [];
-                activeDirection = null;
                 var accuracy = totalAttempts > 0 ? (decimal)correctCount / totalAttempts : 1m;
                 await OnComplete.InvokeAsync((accuracy, 0m));
             }

@@ -10,22 +10,25 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1" Color="Color.Dark">
-        <MudText Typo="Typo.h5" Class="ml-3 cursor-pointer" @onclick="@(() => Navigation.NavigateTo("/"))">
-            ChordCraft
-        </MudText>
+    <MudAppBar Elevation="0" Style="background: #ffffff; border-bottom: 1px solid #e2e8f0;">
+        <div class="d-flex align-center gap-2 ml-3 cursor-pointer" @onclick="@(() => Navigation.NavigateTo("/"))">
+            <MudIcon Icon="@Icons.Material.Filled.Keyboard" Color="Color.Primary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Style="font-family: 'Nunito', sans-serif; font-weight: 900; color: #1e293b;">
+                Chord<span style="color: var(--mud-palette-primary);">Craft</span>
+            </MudText>
+        </div>
         <MudSpacer />
-        <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/lessons">Lessons</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/stats">Stats</MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/badges">Badges</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Default" Href="/lessons">Lessons</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Default" Href="/stats">Stats</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Default" Href="/badges">Badges</MudButton>
         @if (Auth.IsAuthenticated)
         {
-            <MudText Typo="Typo.body2" Class="mx-2" Style="opacity:0.7">@Auth.DisplayName</MudText>
-            <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="LogoutAsync">Logout</MudButton>
+            <MudText Typo="Typo.body2" Class="mx-2" Style="opacity:0.6; color:#1e293b;">@Auth.DisplayName</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="LogoutAsync">Logout</MudButton>
         }
         else
         {
-            <MudButton Variant="Variant.Text" Color="Color.Inherit" Href="/login">Login</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Default" Href="/login">Login</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Warning" Href="/register" Class="ml-1">Save Progress</MudButton>
         }
     </MudAppBar>
@@ -37,8 +40,6 @@
 @code {
     protected override void OnInitialized()
     {
-        // Auth is already initialized by App.razor before routing.
-        // Only subscribe to state changes here so nav re-renders on login/logout.
         Auth.AuthStateChanged += StateHasChanged;
     }
 
@@ -57,11 +58,14 @@
     {
         PaletteLight = new PaletteLight
         {
-            Primary = "#1976d2",
-            Secondary = "#424242",
-            AppbarBackground = "#2d3748",
-            Background = "#f5f7fa",
-            Surface = "#ffffff"
+            Primary    = "#1976d2",
+            Secondary  = "#334155",
+            Warning    = "#f59e0b",
+            Background = "#f1f5f9",
+            Surface    = "#ffffff",
+            AppbarBackground = "#ffffff",
+            AppbarText = "#1e293b",
+            DrawerBackground = "#ffffff",
         }
     };
 }

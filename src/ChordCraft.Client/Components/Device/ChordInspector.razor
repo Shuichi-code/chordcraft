@@ -1,0 +1,84 @@
+<div class="chord-inspector">
+    <div class="device-panels">
+
+        @* ── Left Hand Panel ── *@
+        <div class="hand-panel left-hand">
+            <span class="hand-label">Left Hand</span>
+            <div class="switches-area">
+                @foreach (var sw in LeftHandSwitches)
+                {
+                    var inp      = ActiveInputs.FirstOrDefault(a => a.Switch == sw.Id);
+                    var isActive = inp is not null;
+                    var dir      = inp?.Direction;
+                    var isPush   = isActive && dir == SwitchDirection.Push;
+
+                    <div class="switch-node @(isActive ? "node-active" : "")"
+                         style="left: @(sw.X)%; top: @(sw.Y)%">
+                        <div class="switch-center @(isPush ? "center-push" : "")"></div>
+                        <div class="switch-direction dir-up    @(isActive && dir == SwitchDirection.Up    ? "active" : "")"></div>
+                        <div class="switch-direction dir-down  @(isActive && dir == SwitchDirection.Down  ? "active" : "")"></div>
+                        <div class="switch-direction dir-left  @(isActive && dir == SwitchDirection.Left  ? "active" : "")"></div>
+                        <div class="switch-direction dir-right @(isActive && dir == SwitchDirection.Right ? "active" : "")"></div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* ── Right Hand Panel ── *@
+        <div class="hand-panel right-hand">
+            <span class="hand-label">Right Hand</span>
+            <div class="switches-area">
+                @foreach (var sw in RightHandSwitches)
+                {
+                    var inp      = ActiveInputs.FirstOrDefault(a => a.Switch == sw.Id);
+                    var isActive = inp is not null;
+                    var dir      = inp?.Direction;
+                    var isPush   = isActive && dir == SwitchDirection.Push;
+
+                    <div class="switch-node @(isActive ? "node-active" : "")"
+                         style="left: @(sw.X)%; top: @(sw.Y)%">
+                        <div class="switch-center @(isPush ? "center-push" : "")"></div>
+                        <div class="switch-direction dir-up    @(isActive && dir == SwitchDirection.Up    ? "active" : "")"></div>
+                        <div class="switch-direction dir-down  @(isActive && dir == SwitchDirection.Down  ? "active" : "")"></div>
+                        <div class="switch-direction dir-left  @(isActive && dir == SwitchDirection.Left  ? "active" : "")"></div>
+                        <div class="switch-direction dir-right @(isActive && dir == SwitchDirection.Right ? "active" : "")"></div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<SwitchInput> ActiveInputs { get; set; } = [];
+
+    private record SwitchDef(SwitchId Id, int X, int Y);
+
+    // CC2 switch positions — arc from pinky (outer left) up to index (upper right), then thumb cluster cascades down
+    private static readonly List<SwitchDef> LeftHandSwitches =
+    [
+        new(SwitchId.L_Pinky,      10, 48),  // ALT — far left, middle height
+        new(SwitchId.L_Ring,       25, 24),  // CTRL — upper left
+        new(SwitchId.L_Middle,     43, 12),  // DEL — upper center
+        new(SwitchId.L_Index,      62, 20),  // backspace/r/e/space — upper right
+        new(SwitchId.L_Thumb,      75, 40),  // index main switch — center right
+        new(SwitchId.L_PalmUpper,  60, 62),  // v/c/m/k — lower center
+        new(SwitchId.L_ThumbInner, 40, 76),  // w/z/g — lower
+        new(SwitchId.L_PalmLower,  20, 87),  // -//esc — bottom
+        new(SwitchId.L_Edge,       10, 67),  // arrow/mouse — far left lower
+    ];
+
+    private static readonly List<SwitchDef> RightHandSwitches =
+    [
+        new(SwitchId.R_Pinky,      90, 48),  // ALT — far right, middle height
+        new(SwitchId.R_Ring,       75, 24),  // CTRL — upper right
+        new(SwitchId.R_Middle,     57, 12),  // upper center
+        new(SwitchId.R_Index,      38, 20),  // enter/t/a — upper left
+        new(SwitchId.R_Thumb,      25, 40),  // index main switch — center left
+        new(SwitchId.R_ThumbInner, 40, 62),  // p/h/d/f — lower center
+        new(SwitchId.R_PalmUpper,  60, 76),  // x/b/q — lower
+        new(SwitchId.R_PalmLower,  80, 87),  // ?/esc — bottom
+        new(SwitchId.R_Edge,       90, 67),  // arrow/mouse — far right lower
+    ];
+}

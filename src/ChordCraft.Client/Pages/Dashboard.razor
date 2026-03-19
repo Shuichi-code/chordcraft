@@ -1,0 +1,293 @@
+@page "/dashboard"
+@layout DashboardLayout
+@using ChordCraft.Core.Models
+@using ChordCraft.Core.Enums
+@inject NavigationManager Navigation
+
+<div class="tw min-h-screen flex flex-col font-nunito antialiased" style="background-color:#F8FAFC;color:#1E293B;">
+
+    @* ── Header ── *@
+    <header class="bg-white border-b-2 border-slate-100 sticky top-0 z-50">
+        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+
+            <div class="flex items-center gap-3 cursor-pointer" @onclick='() => Navigation.NavigateTo("/")'>
+                <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-white shadow-[0_4px_0_0_#0096B4] transition-transform active:translate-y-1">
+                    <i class="ph-bold ph-keyboard text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-black tracking-tight text-navy">
+                    Chara<span class="text-brand">Club</span>
+                </h1>
+            </div>
+
+            <nav class="hidden lg:flex items-center gap-2">
+                <a href="/dashboard" class="px-5 py-2.5 rounded-full bg-slate-100 text-brand font-bold flex items-center gap-2">
+                    <i class="ph-fill ph-map-trifold text-lg"></i> Lesson Plan
+                </a>
+                <a href="/stats" class="px-5 py-2.5 rounded-full text-slate-500 font-bold hover:bg-slate-50 hover:text-slate-700 transition-colors flex items-center gap-2">
+                    <i class="ph-bold ph-chart-line-up text-lg"></i> Stats
+                </a>
+                <a href="/badges" class="px-5 py-2.5 rounded-full text-slate-500 font-bold hover:bg-slate-50 hover:text-slate-700 transition-colors flex items-center gap-2">
+                    <i class="ph-bold ph-medal text-lg"></i> Badges
+                </a>
+                <a href="#" class="px-5 py-2.5 rounded-full text-slate-500 font-bold hover:bg-slate-50 hover:text-slate-700 transition-colors flex items-center gap-2">
+                    <i class="ph-bold ph-game-controller text-lg"></i> Games
+                </a>
+            </nav>
+
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-1.5 font-bold text-orange-500 bg-orange-50 px-3 py-1.5 rounded-full border border-orange-100">
+                    <i class="ph-fill ph-fire text-xl"></i>
+                    <span>14 Days</span>
+                </div>
+                <div class="flex items-center gap-3 cursor-pointer group">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-sm font-bold text-navy">Alex Typist</div>
+                        <div class="text-xs font-bold text-brand uppercase tracking-wider">Level 8</div>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-brand-light border-4 border-white shadow-md flex items-center justify-center text-brand font-black text-lg group-hover:scale-105 transition-transform">
+                        A
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    @* ── Main ── *@
+    <main class="flex-1 w-full max-w-[1440px] mx-auto px-6 py-8 flex gap-8">
+
+        @* Left column *@
+        <div class="flex-1 flex flex-col gap-8">
+
+            @* Hero card *@
+            <div class="bg-white rounded-3xl p-8 shadow-soft border border-slate-100 relative overflow-hidden flex items-center justify-between">
+                <div class="absolute -right-20 -top-20 w-64 h-64 bg-brand-light rounded-full opacity-50"></div>
+                <div class="absolute right-20 -bottom-10 w-32 h-32 bg-yellow-50 rounded-full opacity-50"></div>
+
+                <div class="relative z-10 max-w-xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-light text-brand font-bold text-sm mb-4">
+                        <i class="ph-fill ph-star"></i> Current Focus
+                    </div>
+                    <h2 class="text-3xl font-black text-navy mb-2">Lesson 14: Common Digraphs</h2>
+                    <p class="text-slate-500 font-semibold mb-6 text-lg">Master chords for frequently paired letters like 'th', 'he', and 'in' to boost your speed.</p>
+                    <button @onclick='() => Navigation.NavigateTo("/lessons/14")'
+                            class="bg-accent text-white font-black text-lg px-8 py-4 rounded-2xl shadow-[0_4px_0_0_#FB8500] flex items-center gap-3 hover:bg-accent-dark transition-transform active:translate-y-1">
+                        <i class="ph-bold ph-play"></i>
+                        Resume Practice
+                    </button>
+                </div>
+
+                <div class="relative z-10 w-48 h-48 bg-slate-50 rounded-full border-4 border-white shadow-lg flex items-center justify-center mr-8">
+                    <i class="ph-duotone ph-robot text-7xl text-brand"></i>
+                    <div class="absolute -top-2 -right-2 bg-white rounded-xl shadow-md p-2 transform rotate-12">
+                        <span class="text-xl">🚀</span>
+                    </div>
+                </div>
+            </div>
+
+            @* Chord Inspector *@
+            <div class="bg-navy rounded-3xl p-8 shadow-soft relative overflow-hidden flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-white font-bold text-xl flex items-center gap-2">
+                        <i class="ph-bold ph-crosshair"></i> Chord Inspector
+                    </h3>
+                    <div class="flex gap-2">
+                        <button class="w-10 h-10 rounded-full bg-slate-700 text-white flex items-center justify-center hover:bg-slate-600 transition">
+                            <i class="ph-bold ph-speaker-high"></i>
+                        </button>
+                        <button class="w-10 h-10 rounded-full bg-slate-700 text-white flex items-center justify-center hover:bg-slate-600 transition">
+                            <i class="ph-bold ph-keyboard"></i>
+                        </button>
+                    </div>
+                </div>
+
+                @* Target word display *@
+                <div class="bg-slate-800 rounded-2xl p-6 mb-8 text-center shadow-inner">
+                    <div class="text-4xl font-black tracking-widest font-mono">
+                        <span class="text-slate-500">w a s </span>
+                        <span class="text-brand border-b-4 border-brand pb-1">t h e</span>
+                        <span class="text-slate-600 opacity-50"> b e s t</span>
+                    </div>
+                    <div class="text-brand font-bold mt-4 uppercase tracking-widest text-sm">Target Word</div>
+                </div>
+
+                @* Hand panels *@
+                <div class="bg-[#2A3649] rounded-2xl p-8 flex justify-center gap-16 relative">
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-2 bg-slate-700 rounded-full z-0"></div>
+
+                    @* Left hand *@
+                    <div class="bg-slate-800 border-4 border-slate-700 w-64 h-64 rounded-[3rem] rounded-tr-xl flex flex-col items-center justify-center relative z-10 shadow-lg">
+                        <div class="text-slate-500 font-bold uppercase text-xs absolute top-4">Left Hand</div>
+                        <div class="flex gap-2 mt-4 -rotate-6">
+                            @foreach (var s in _leftFingers)
+                            {
+                                <SwitchNode Up="@s.Up" Down="@s.Down" Left="@s.Left" Right="@s.Right" Push="@s.Push" YOffset="@s.YOffset" />
+                            }
+                        </div>
+                        <div class="relative w-12 h-12 flex items-center justify-center mt-8 ml-12">
+                            <SwitchNode Up="@_leftThumb.Up" Down="@_leftThumb.Down" Left="@_leftThumb.Left" Right="@_leftThumb.Right" Large="true" />
+                        </div>
+                    </div>
+
+                    @* Right hand *@
+                    <div class="bg-slate-800 border-4 border-slate-700 w-64 h-64 rounded-[3rem] rounded-tl-xl flex flex-col items-center justify-center relative z-10 shadow-lg">
+                        <div class="text-slate-500 font-bold uppercase text-xs absolute top-4">Right Hand</div>
+                        <div class="flex gap-2 mt-4 rotate-6">
+                            @foreach (var s in _rightFingers)
+                            {
+                                <SwitchNode Up="@s.Up" Down="@s.Down" Left="@s.Left" Right="@s.Right" Push="@s.Push" YOffset="@s.YOffset" />
+                            }
+                        </div>
+                        <div class="relative w-12 h-12 flex items-center justify-center mt-8 mr-12">
+                            <SwitchNode Up="@_rightThumb.Up" Down="@_rightThumb.Down" Left="@_rightThumb.Left" Right="@_rightThumb.Right" Large="true" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Module grid *@
+            <div class="mb-12">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-black text-navy">Module 2: The Core Chords</h2>
+                    <button class="text-brand font-bold hover:underline">View Full Map</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    @foreach (var card in _lessonCards)
+                    {
+                        <LessonPlanCard Card="@card" />
+                    }
+
+                </div>
+            </div>
+
+        </div>
+
+        @* Sidebar *@
+        <aside class="w-80 flex-shrink-0 flex flex-col gap-6">
+
+            @* Daily goal *@
+            <div class="bg-white rounded-3xl p-6 shadow-soft text-center border border-slate-100">
+                <h3 class="font-bold text-navy mb-4 text-lg">Daily Practice Goal</h3>
+                <div class="relative w-32 h-32 mx-auto mb-4">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <circle class="text-slate-100 stroke-current" stroke-width="8" cx="50" cy="50" r="40" fill="transparent"></circle>
+                        <circle class="text-accent stroke-current" stroke-width="8" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent"
+                                stroke-dasharray="251.2" stroke-dashoffset="62.8"
+                                style="transition:stroke-dashoffset 0.35s;transform:rotate(-90deg);transform-origin:50% 50%;"></circle>
+                    </svg>
+                    <div class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                        <span class="text-3xl font-black text-navy">15</span>
+                        <span class="text-xs font-bold text-slate-400 uppercase">Mins</span>
+                    </div>
+                </div>
+                <p class="text-slate-500 font-bold text-sm">5 mins remaining today!</p>
+            </div>
+
+            @* Performance *@
+            <div class="bg-white rounded-3xl p-6 shadow-soft border border-slate-100">
+                <h3 class="font-bold text-navy mb-4 text-lg flex items-center justify-between">
+                    Performance
+                    <a href="/stats" class="text-brand text-sm hover:underline">Details</a>
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-500 rounded-xl flex items-center justify-center text-xl">
+                            <i class="ph-bold ph-speedometer"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-black text-navy leading-none">64 <span class="text-sm font-bold text-slate-400 uppercase">WPM</span></div>
+                            <div class="text-xs font-bold text-emerald-500 flex items-center gap-1 mt-1">
+                                <i class="ph-bold ph-trend-up"></i> +4 from last week
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-500 rounded-xl flex items-center justify-center text-xl">
+                            <i class="ph-bold ph-target"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-black text-navy leading-none">96<span class="text-sm font-bold text-slate-400">%</span></div>
+                            <div class="text-xs font-bold text-slate-400 mt-1">Overall Accuracy</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl">
+                        <div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-xl flex items-center justify-center text-xl">
+                            <i class="ph-bold ph-star"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-black text-navy leading-none">142</div>
+                            <div class="text-xs font-bold text-slate-400 mt-1">Total Stars Earned</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Badges *@
+            <div class="bg-white rounded-3xl p-6 shadow-soft border border-slate-100">
+                <h3 class="font-bold text-navy mb-4 text-lg">Recent Badges</h3>
+                <div class="flex justify-between">
+                    @foreach (var b in _badges)
+                    {
+                        <div class="flex flex-col items-center gap-2 group cursor-pointer">
+                            <div class="w-14 h-14 rounded-full p-1 shadow-md group-hover:scale-110 transition-transform @b.GradientClass">
+                                <div class="w-full h-full bg-white rounded-full flex items-center justify-center">
+                                    <i class="@b.IconClass text-2xl @b.IconColor"></i>
+                                </div>
+                            </div>
+                            <span class="text-xs font-bold text-slate-600 text-center leading-tight">@((MarkupString)b.Label)</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </aside>
+    </main>
+</div>
+
+@code {
+    record SwitchState(bool Up, bool Down, bool Left, bool Right, bool Push = false, string YOffset = "");
+    record BadgeInfo(string GradientClass, string IconClass, string IconColor, string Label);
+
+    // Demo active switch states for "the" chord (t=R_Index:Down, h=R_ThumbInner:Right, e=L_Index:Down)
+    List<SwitchState> _leftFingers =
+    [
+        new(false, false, false, false, YOffset: "translate-y-4"),   // pinky
+        new(false, false, false, false, YOffset: "translate-y-1"),   // ring
+        new(false, true,  false, false, YOffset: "-translate-y-1"),  // middle — 'e' south active
+        new(false, false, true,  false, YOffset: "translate-y-2"),   // index  — space west active
+    ];
+    SwitchState _leftThumb = new(false, false, false, false);
+
+    List<SwitchState> _rightFingers =
+    [
+        new(true,  false, false, false, YOffset: "translate-y-2"),   // index  — 't' top active
+        new(false, false, false, false, YOffset: "-translate-y-1"),  // middle
+        new(false, false, false, false, YOffset: "translate-y-1"),   // ring
+        new(false, false, false, false, YOffset: "translate-y-4"),   // pinky
+    ];
+    SwitchState _rightThumb = new(false, false, false, true);       // 'h' right active
+
+    public record LessonCardModel(
+        int Number, string Title, string Status,
+        int Stars, int MaxStars, string? Score, bool IsNext, bool IsLocked);
+
+    List<LessonCardModel> _lessonCards =
+    [
+        new(11, "Intro to Digraphs",  "done",    3, 3, "100% Score",   false, false),
+        new(12, "Hand Alternation",   "partial", 2, 3, "85% Score",    false, false),
+        new(13, "The 'T' Cluster",    "done",    3, 3, "96% Score",    false, false),
+        new(14, "Common Digraphs",    "next",    0, 3, null,           true,  false),
+        new(15, "Word Endings",       "locked",  0, 3, "Requires Lvl 14", false, true),
+        new(16, "Prefixes",           "locked",  0, 3, "Locked",       false, true),
+        new(17, "Speed Drills I",     "locked",  0, 3, "Locked",       false, true),
+        new(18, "Module Test",        "locked",  0, 3, "Locked",       false, true),
+    ];
+
+    List<BadgeInfo> _badges =
+    [
+        new("bg-gradient-to-br from-yellow-300 to-amber-500",  "ph-fill ph-lightning",      "text-amber-500",  "Speed<br/>Demon"),
+        new("bg-gradient-to-br from-emerald-300 to-emerald-500","ph-fill ph-check-circle",  "text-emerald-500","Flawless<br/>Module"),
+        new("bg-gradient-to-br from-[#E0F7FA] to-[#00B4D8]",  "ph-fill ph-hands-clapping", "text-[#00B4D8]",  "Chord<br/>Master"),
+    ];
+}

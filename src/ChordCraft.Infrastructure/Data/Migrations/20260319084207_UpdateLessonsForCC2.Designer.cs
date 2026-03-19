@@ -3,6 +3,7 @@ using System;
 using ChordCraft.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChordCraft.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260319084207_UpdateLessonsForCC2")]
+    partial class UpdateLessonsForCC2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,178 +258,178 @@ namespace ChordCraft.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 2,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left index switch south (toward you) to type e\",\"targetInput\":\"L_Index:Down\",\"targetChar\":\"e\"}]}",
-                            Description = "Tilt the left index switch south (toward you) to type e",
+                            Content = "{\"steps\":[{\"instruction\":\"Press the left upper index switch straight down to type r\",\"targetInput\":\"L_Index:Push\",\"targetChar\":\"r\"}]}",
+                            Description = "Press the left upper index switch straight down to type r",
                             Number = 2,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"L_Index:Down\"]",
-                            Title = "Left Index South: e",
+                            TargetInputs = "[\"L_Index:Push\"]",
+                            Title = "Left Index Press: r",
                             Type = 0
                         },
                         new
                         {
                             Id = 3,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right index switch south (toward you) to type t\",\"targetInput\":\"R_Index:Down\",\"targetChar\":\"t\"}]}",
-                            Description = "Tilt the right index switch south (toward you) to type t",
+                            Content = "{\"steps\":[{\"instruction\":\"Press the right ring switch straight down to type j\",\"targetInput\":\"R_Ring:Push\",\"targetChar\":\"j\"}]}",
+                            Description = "Press the right ring switch straight down to type j",
                             Number = 3,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"R_Index:Down\"]",
-                            Title = "Right Index South: t",
+                            TargetInputs = "[\"R_Ring:Push\"]",
+                            Title = "Right Ring Press: j",
                             Type = 0
                         },
                         new
                         {
                             Id = 4,
-                            Content = "{\"sequence\":[\"e\",\"t\",\"e\",\"t\",\"e\",\"e\",\"t\",\"t\",\"e\",\"t\",\"t\",\"e\",\"e\",\"t\",\"e\",\"t\",\"t\",\"e\",\"t\",\"e\"]}",
-                            Description = "Practice typing e and t",
+                            Content = "{\"sequence\":[\"r\",\"j\",\"r\",\"j\",\"r\",\"r\",\"j\",\"j\",\"r\",\"j\",\"j\",\"r\",\"r\",\"j\",\"r\",\"j\",\"j\",\"r\",\"j\",\"r\"]}",
+                            Description = "Practice typing r and j",
                             Number = 4,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"L_Index:Down\",\"R_Index:Down\"]",
-                            Title = "Review: e & t",
+                            TargetInputs = "[\"L_Index:Push\",\"R_Ring:Push\"]",
+                            Title = "Review: r & j",
                             Type = 1
                         },
                         new
                         {
                             Id = 5,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right index switch west (to the left) to type a\",\"targetInput\":\"R_Index:Left\",\"targetChar\":\"a\"}]}",
-                            Description = "Tilt the right index switch west (to the left) to type a",
+                            Content = "{\"steps\":[{\"instruction\":\"Press the left middle switch straight down to type o\",\"targetInput\":\"L_Middle:Push\",\"targetChar\":\"o\"}]}",
+                            Description = "Press the left middle switch straight down to type o",
                             Number = 5,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"R_Index:Left\"]",
-                            Title = "Right Index West: a",
+                            TargetInputs = "[\"L_Middle:Push\"]",
+                            Title = "Left Middle Press: o",
                             Type = 0
                         },
                         new
                         {
                             Id = 6,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right middle switch south (toward you) to type s\",\"targetInput\":\"R_Middle:Down\",\"targetChar\":\"s\"}]}",
-                            Description = "Tilt the right middle switch south (toward you) to type s",
+                            Content = "{\"steps\":[{\"instruction\":\"Press the right middle switch straight down to type s\",\"targetInput\":\"R_Middle:Push\",\"targetChar\":\"s\"}]}",
+                            Description = "Press the right middle switch straight down to type s",
                             Number = 6,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"R_Middle:Down\"]",
-                            Title = "Right Middle South: s",
+                            TargetInputs = "[\"R_Middle:Push\"]",
+                            Title = "Right Middle Press: s",
                             Type = 0
                         },
                         new
                         {
                             Id = 7,
-                            Content = "{\"sequence\":[\"a\",\"s\",\"a\",\"s\",\"a\",\"a\",\"s\",\"s\",\"a\",\"s\",\"s\",\"a\",\"a\",\"s\",\"a\",\"s\",\"s\",\"a\",\"s\",\"a\"]}",
-                            Description = "Practice typing a and s",
+                            Content = "{\"sequence\":[\"o\",\"s\",\"o\",\"s\",\"o\",\"o\",\"s\",\"s\",\"o\",\"s\",\"s\",\"o\",\"o\",\"s\",\"o\",\"s\",\"s\",\"o\",\"s\",\"o\"]}",
+                            Description = "Practice typing o and s",
                             Number = 7,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"R_Index:Left\",\"R_Middle:Down\"]",
-                            Title = "Review: a & s",
+                            TargetInputs = "[\"L_Middle:Push\",\"R_Middle:Push\"]",
+                            Title = "Review: o & s",
                             Type = 1
                         },
                         new
                         {
                             Id = 8,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left middle switch south (toward you) to type o\",\"targetInput\":\"L_Middle:Down\",\"targetChar\":\"o\"}]}",
-                            Description = "Tilt the left middle switch south (toward you) to type o",
+                            Content = "{\"steps\":[{\"instruction\":\"Press the left lower index switch straight down to type e\",\"targetInput\":\"L_Thumb:Push\",\"targetChar\":\"e\"}]}",
+                            Description = "Press the left lower index switch straight down to type e",
                             Number = 8,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"L_Middle:Down\"]",
-                            Title = "Left Middle South: o",
+                            TargetInputs = "[\"L_Thumb:Push\"]",
+                            Title = "Left Lower Index Press: e",
                             Type = 0
                         },
                         new
                         {
                             Id = 9,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left index switch west (to the left) to type a space\",\"targetInput\":\"L_Index:Left\",\"targetChar\":\" \"}]}",
-                            Description = "Tilt the left index switch west (to the left) to type a space",
+                            Content = "{\"steps\":[{\"instruction\":\"Press the right upper index switch straight down to type a\",\"targetInput\":\"R_Index:Push\",\"targetChar\":\"a\"}]}",
+                            Description = "Press the right upper index switch straight down to type a",
                             Number = 9,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"L_Index:Left\"]",
-                            Title = "Left Index West: space",
+                            TargetInputs = "[\"R_Index:Push\"]",
+                            Title = "Right Upper Index Press: a",
                             Type = 0
                         },
                         new
                         {
                             Id = 10,
-                            Content = "{\"sequence\":[\"o\",\" \",\"t\",\"o\",\" \",\"e\",\"o\",\" \",\"s\",\"o\",\" \",\"a\",\" \",\"o\",\" \",\"t\",\"o\",\" \",\"e\",\" \"]}",
-                            Description = "Practice o and space",
+                            Content = "{\"sequence\":[\"e\",\"a\",\"e\",\"a\",\"e\",\"e\",\"a\",\"a\",\"e\",\"a\",\"a\",\"e\",\"e\",\"a\",\"e\",\"a\",\"a\",\"e\",\"a\",\"e\"]}",
+                            Description = "Practice typing e and a",
                             Number = 10,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"L_Middle:Down\",\"L_Index:Left\"]",
-                            Title = "Review: o & space",
+                            TargetInputs = "[\"L_Thumb:Push\",\"R_Index:Push\"]",
+                            Title = "Review: e & a",
                             Type = 1
                         },
                         new
                         {
                             Id = 11,
-                            Content = "{\"text\":\"eat sea oat toe sat tea ate set eat oat sea toe sat\",\"timeLimitSeconds\":120}",
-                            Description = "Build speed with your first five keys",
+                            Content = "{\"text\":\"r j o s e a r a e s o j r s a o j e r a\",\"timeLimitSeconds\":120}",
+                            Description = "Build speed with your first six press keys",
                             Number = 11,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
                             SpeedGoal = 5,
                             TargetInputs = "[]",
-                            Title = "Practice: e t a s o",
+                            Title = "Practice: r j o s e a",
                             Type = 2
                         },
                         new
                         {
                             Id = 12,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left ring switch south (toward you) to type u\",\"targetInput\":\"L_Ring:Down\",\"targetChar\":\"u\"}]}",
-                            Description = "Tilt the left ring switch south (toward you) to type u",
+                            Content = "{\"steps\":[{\"instruction\":\"Press the right lower index switch straight down to type t\",\"targetInput\":\"R_Thumb:Push\",\"targetChar\":\"t\"}]}",
+                            Description = "Press the right lower index switch straight down to type t",
                             Number = 12,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"L_Ring:Down\"]",
-                            Title = "Left Ring South: u",
+                            TargetInputs = "[\"R_Thumb:Push\"]",
+                            Title = "Right Lower Index Press: t",
                             Type = 0
                         },
                         new
                         {
                             Id = 13,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right ring switch south (toward you) to type n\",\"targetInput\":\"R_Ring:Down\",\"targetChar\":\"n\"}]}",
-                            Description = "Tilt the right ring switch south (toward you) to type n",
+                            Content = "{\"steps\":[{\"instruction\":\"Press the left thumb switch straight down to type w\",\"targetInput\":\"L_ThumbInner:Push\",\"targetChar\":\"w\"}]}",
+                            Description = "Press the left thumb switch straight down to type w",
                             Number = 13,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"R_Ring:Down\"]",
-                            Title = "Right Ring South: n",
+                            TargetInputs = "[\"L_ThumbInner:Push\"]",
+                            Title = "Left Thumb Press: w",
                             Type = 0
                         },
                         new
                         {
                             Id = 14,
-                            Content = "{\"sequence\":[\"u\",\"n\",\"u\",\"n\",\"u\",\"u\",\"n\",\"n\",\"u\",\"n\",\"n\",\"u\",\"u\",\"n\",\"u\",\"n\",\"n\",\"u\",\"n\",\"u\"]}",
-                            Description = "Practice typing u and n",
+                            Content = "{\"sequence\":[\"t\",\"w\",\"t\",\"w\",\"t\",\"t\",\"w\",\"w\",\"t\",\"w\",\"w\",\"t\",\"t\",\"w\",\"t\",\"w\",\"w\",\"t\",\"w\",\"t\"]}",
+                            Description = "Practice typing t and w",
                             Number = 14,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
-                            TargetInputs = "[\"L_Ring:Down\",\"R_Ring:Down\"]",
-                            Title = "Review: u & n",
+                            TargetInputs = "[\"R_Thumb:Push\",\"L_ThumbInner:Push\"]",
+                            Title = "Review: t & w",
                             Type = 1
                         },
                         new
                         {
                             Id = 15,
-                            Content = "{\"gameType\":\"falling-characters\",\"timeLimitSeconds\":60,\"wordPool\":[\"e\",\"t\",\"a\",\"s\",\"o\",\"u\",\"n\"]}",
-                            Description = "Game challenge with all learned keys",
+                            Content = "{\"gameType\":\"falling-characters\",\"timeLimitSeconds\":60,\"wordPool\":[\"r\",\"j\",\"o\",\"s\",\"e\",\"a\",\"t\",\"w\"]}",
+                            Description = "Game challenge with all learned press keys",
                             Number = 15,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 1,
                             SpeedGoal = 8,
                             TargetInputs = "[]",
-                            Title = "Play: South & West Tilts",
+                            Title = "Play: Press Keys",
                             Type = 3
                         },
                         new
                         {
                             Id = 16,
                             Content = "{\"videoUrl\":\"/videos/directions.mp4\",\"durationSeconds\":90,\"completionThreshold\":0.9}",
-                            Description = "Learn the north, east, and west tilt directions",
+                            Description = "Learn the 4 tilt directions: north, south, east, and west",
                             Number = 1,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
@@ -437,20 +440,20 @@ namespace ChordCraft.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 17,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left index switch east (to the right) to type r\",\"targetInput\":\"L_Index:Right\",\"targetChar\":\"r\"}]}",
-                            Description = "Tilt the left index switch east (to the right) to type r",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left ring switch south (back toward you) to type u\",\"targetInput\":\"L_Ring:Down\",\"targetChar\":\"u\"}]}",
+                            Description = "Tilt the left ring switch south (back) to type u",
                             Number = 2,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"L_Index:Right\"]",
-                            Title = "Left Index East: r",
+                            TargetInputs = "[\"L_Ring:Down\"]",
+                            Title = "Left Ring South: u",
                             Type = 0
                         },
                         new
                         {
                             Id = 18,
                             Content = "{\"steps\":[{\"instruction\":\"Tilt the left middle switch east (to the right) to type i\",\"targetInput\":\"L_Middle:Right\",\"targetChar\":\"i\"}]}",
-                            Description = "Tilt the left middle switch east (to the right) to type i",
+                            Description = "Tilt the left middle switch east (right) to type i",
                             Number = 3,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
@@ -461,20 +464,20 @@ namespace ChordCraft.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 19,
-                            Content = "{\"sequence\":[\"r\",\"i\",\"r\",\"i\",\"i\",\"r\",\"r\",\"i\",\"r\",\"i\",\"i\",\"r\",\"r\",\"i\",\"r\",\"i\",\"i\",\"r\",\"i\",\"r\"]}",
-                            Description = "Practice r and i",
+                            Content = "{\"sequence\":[\"u\",\"i\",\"u\",\"i\",\"i\",\"u\",\"u\",\"i\",\"u\",\"i\",\"i\",\"u\",\"u\",\"i\",\"u\",\"i\",\"i\",\"u\",\"i\",\"u\"]}",
+                            Description = "Practice u and i tilt inputs",
                             Number = 4,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"L_Index:Right\",\"L_Middle:Right\"]",
-                            Title = "Review: r & i",
+                            TargetInputs = "[\"L_Ring:Down\",\"L_Middle:Right\"]",
+                            Title = "Review: u & i",
                             Type = 1
                         },
                         new
                         {
                             Id = 20,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right middle switch north (away from you) to type y\",\"targetInput\":\"R_Middle:Up\",\"targetChar\":\"y\"}]}",
-                            Description = "Tilt the right middle switch north (away from you) to type y",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right middle switch north (forward, away from you) to type y\",\"targetInput\":\"R_Middle:Up\",\"targetChar\":\"y\"}]}",
+                            Description = "Tilt the right middle switch north (forward) to type y",
                             Number = 5,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
@@ -485,153 +488,153 @@ namespace ChordCraft.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 21,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right middle switch west (to the left) to type j\",\"targetInput\":\"R_Middle:Left\",\"targetChar\":\"j\"}]}",
-                            Description = "Tilt the right middle switch west (to the left) to type j",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right middle switch south (back toward you) to type n\",\"targetInput\":\"R_Middle:Down\",\"targetChar\":\"n\"}]}",
+                            Description = "Tilt the right middle switch south (back) to type n",
                             Number = 6,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"R_Middle:Left\"]",
-                            Title = "Right Middle West: j",
+                            TargetInputs = "[\"R_Middle:Down\"]",
+                            Title = "Right Middle South: n",
                             Type = 0
                         },
                         new
                         {
                             Id = 22,
-                            Content = "{\"sequence\":[\"y\",\"j\",\"y\",\"j\",\"j\",\"y\",\"y\",\"j\",\"y\",\"j\",\"j\",\"y\",\"y\",\"j\",\"y\",\"j\",\"j\",\"y\",\"j\",\"y\"]}",
-                            Description = "Practice y and j",
+                            Content = "{\"sequence\":[\"y\",\"n\",\"y\",\"n\",\"n\",\"y\",\"y\",\"n\",\"y\",\"n\",\"n\",\"y\",\"y\",\"n\",\"y\",\"n\",\"n\",\"y\",\"n\",\"y\"]}",
+                            Description = "Practice y and n tilt inputs",
                             Number = 7,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"R_Middle:Up\",\"R_Middle:Left\"]",
-                            Title = "Review: y & j",
+                            TargetInputs = "[\"R_Middle:Up\",\"R_Middle:Down\"]",
+                            Title = "Review: y & n",
                             Type = 1
                         },
                         new
                         {
                             Id = 23,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right thumb switch south (toward you) to type d\",\"targetInput\":\"R_ThumbInner:Down\",\"targetChar\":\"d\"},{\"instruction\":\"Tilt the right thumb switch north (away from you) to type p\",\"targetInput\":\"R_ThumbInner:Up\",\"targetChar\":\"p\"}]}",
-                            Description = "Tilt the right thumb switch south for d, north for p",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right lower sub-switch east (to the right) to type h\",\"targetInput\":\"R_ThumbInner:Right\",\"targetChar\":\"h\"}]}",
+                            Description = "Tilt the right lower switch east (right) to type h",
                             Number = 8,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"R_ThumbInner:Down\",\"R_ThumbInner:Up\"]",
-                            Title = "Right Thumb South & North: d & p",
+                            TargetInputs = "[\"R_ThumbInner:Right\"]",
+                            Title = "Right Lower East: h",
                             Type = 0
                         },
                         new
                         {
                             Id = 24,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right thumb switch east (to the right) to type h\",\"targetInput\":\"R_ThumbInner:Right\",\"targetChar\":\"h\"},{\"instruction\":\"Tilt the right thumb switch west (to the left) to type f\",\"targetInput\":\"R_ThumbInner:Left\",\"targetChar\":\"f\"}]}",
-                            Description = "Tilt the right thumb switch east for h, west for f",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right lower sub-switch south (back toward you) to type d\",\"targetInput\":\"R_ThumbInner:Down\",\"targetChar\":\"d\"}]}",
+                            Description = "Tilt the right lower switch south (back) to type d",
                             Number = 9,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"R_ThumbInner:Right\",\"R_ThumbInner:Left\"]",
-                            Title = "Right Thumb East & West: h & f",
+                            TargetInputs = "[\"R_ThumbInner:Down\"]",
+                            Title = "Right Lower South: d",
                             Type = 0
                         },
                         new
                         {
                             Id = 25,
-                            Content = "{\"sequence\":[\"p\",\"h\",\"d\",\"f\",\"h\",\"p\",\"f\",\"d\",\"p\",\"f\",\"h\",\"d\",\"f\",\"p\",\"d\",\"h\",\"p\",\"d\",\"f\",\"h\"]}",
-                            Description = "Practice all four right thumb tilt directions",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right lower sub-switch west (to the left) to type f\",\"targetInput\":\"R_ThumbInner:Left\",\"targetChar\":\"f\"}]}",
+                            Description = "Tilt the right lower switch west (left) to type f",
                             Number = 10,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"R_ThumbInner:Up\",\"R_ThumbInner:Right\",\"R_ThumbInner:Down\",\"R_ThumbInner:Left\"]",
-                            Title = "Review: p, h, d & f",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left thumb switch west (to the left) to type g\",\"targetInput\":\"L_ThumbInner:Left\",\"targetChar\":\"g\"},{\"instruction\":\"Tilt the left thumb switch east (to the right) to type w\",\"targetInput\":\"L_ThumbInner:Right\",\"targetChar\":\"w\"}]}",
-                            Description = "Tilt the left thumb switch west for g, east for w",
-                            Number = 11,
-                            PassAccuracyThreshold = 0.80m,
-                            PhaseId = 2,
-                            TargetInputs = "[\"L_ThumbInner:Left\",\"L_ThumbInner:Right\"]",
-                            Title = "Left Thumb West & East: g & w",
+                            TargetInputs = "[\"R_ThumbInner:Left\"]",
+                            Title = "Right Lower West: f",
                             Type = 0
                         },
                         new
                         {
+                            Id = 26,
+                            Content = "{\"sequence\":[\"h\",\"d\",\"f\",\"h\",\"d\",\"f\",\"d\",\"f\",\"h\",\"f\",\"h\",\"d\",\"h\",\"f\",\"d\",\"h\",\"d\",\"f\"]}",
+                            Description = "Practice h, d, and f on the right lower sub-switch",
+                            Number = 11,
+                            PassAccuracyThreshold = 0.80m,
+                            PhaseId = 2,
+                            TargetInputs = "[\"R_ThumbInner:Right\",\"R_ThumbInner:Down\",\"R_ThumbInner:Left\"]",
+                            Title = "Review: h, d & f",
+                            Type = 1
+                        },
+                        new
+                        {
                             Id = 27,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left palm switch south (toward you) to type c\",\"targetInput\":\"L_PalmUpper:Down\",\"targetChar\":\"c\"}]}",
-                            Description = "Tilt the left palm switch south (toward you) to type c",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left thumb switch west (to the left) to type g\",\"targetInput\":\"L_ThumbInner:Left\",\"targetChar\":\"g\"}]}",
+                            Description = "Tilt the left thumb switch west (left) to type g",
                             Number = 12,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"L_PalmUpper:Down\"]",
-                            Title = "Left Palm South: c",
+                            TargetInputs = "[\"L_ThumbInner:Left\"]",
+                            Title = "Left Thumb West: g",
                             Type = 0
                         },
                         new
                         {
                             Id = 28,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left palm switch west (to the left) to type m\",\"targetInput\":\"L_PalmUpper:Left\",\"targetChar\":\"m\"}]}",
-                            Description = "Tilt the left palm switch west (to the left) to type m",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left lower sub-switch south (back toward you) to type c\",\"targetInput\":\"L_PalmUpper:Down\",\"targetChar\":\"c\"}]}",
+                            Description = "Tilt the left lower sub-switch south (back) to type c",
                             Number = 13,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"L_PalmUpper:Left\"]",
-                            Title = "Left Palm West: m",
+                            TargetInputs = "[\"L_PalmUpper:Down\"]",
+                            Title = "Left Lower South: c",
                             Type = 0
                         },
                         new
                         {
                             Id = 29,
-                            Content = "{\"text\":\"the man can run and eat food if it is hot the cat sat and ate\",\"timeLimitSeconds\":120}",
-                            Description = "Speed drill with all letters learned so far",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left lower sub-switch west (to the left) to type m\",\"targetInput\":\"L_PalmUpper:Left\",\"targetChar\":\"m\"}]}",
+                            Description = "Tilt the left lower sub-switch west (left) to type m",
                             Number = 14,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            SpeedGoal = 6,
-                            TargetInputs = "[]",
-                            Title = "Practice: Common Letters",
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right ring switch west (to the left) to type l\",\"targetInput\":\"R_Ring:Left\",\"targetChar\":\"l\"}]}",
-                            Description = "Tilt the right ring switch west (to the left) to type l",
-                            Number = 15,
-                            PassAccuracyThreshold = 0.80m,
-                            PhaseId = 2,
-                            TargetInputs = "[\"R_Ring:Left\"]",
-                            Title = "Right Ring West: l",
+                            TargetInputs = "[\"L_PalmUpper:Left\"]",
+                            Title = "Left Lower West: m",
                             Type = 0
                         },
                         new
                         {
+                            Id = 30,
+                            Content = "{\"text\":\"e r i u o s a j e a r s i o u j r e s a u i o j\",\"timeLimitSeconds\":120}",
+                            Description = "Speed drill: e r i u o s a j",
+                            Number = 15,
+                            PassAccuracyThreshold = 0.80m,
+                            PhaseId = 2,
+                            SpeedGoal = 6,
+                            TargetInputs = "[]",
+                            Title = "Practice: vowels & common keys",
+                            Type = 2
+                        },
+                        new
+                        {
                             Id = 31,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left palm switch east (to the right) to type k\",\"targetInput\":\"L_PalmUpper:Right\",\"targetChar\":\"k\"}]}",
-                            Description = "Tilt the left palm switch east (to the right) to type k",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right ring switch east (to the right) to type l\",\"targetInput\":\"R_Ring:Right\",\"targetChar\":\"l\"}]}",
+                            Description = "Tilt the right ring switch east (right) to type l",
                             Number = 16,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"L_PalmUpper:Right\"]",
-                            Title = "Left Palm East: k",
+                            TargetInputs = "[\"R_Ring:Right\"]",
+                            Title = "Right Ring East: l",
                             Type = 0
                         },
                         new
                         {
                             Id = 32,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left palm switch north (away from you) to type v\",\"targetInput\":\"L_PalmUpper:Up\",\"targetChar\":\"v\"}]}",
-                            Description = "Tilt the left palm switch north (away from you) to type v",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left lower sub-switch east (to the right) to type k\",\"targetInput\":\"L_PalmUpper:Right\",\"targetChar\":\"k\"}]}",
+                            Description = "Tilt the left lower sub-switch east (right) to type k",
                             Number = 17,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"L_PalmUpper:Up\"]",
-                            Title = "Left Palm North: v",
+                            TargetInputs = "[\"L_PalmUpper:Right\"]",
+                            Title = "Left Lower East: k",
                             Type = 0
                         },
                         new
                         {
                             Id = 33,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left thumb switch south (toward you) to type z\",\"targetInput\":\"L_ThumbInner:Down\",\"targetChar\":\"z\"}]}",
-                            Description = "Tilt the left thumb switch south (toward you) to type z",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the left thumb switch south (back toward you) to type z\",\"targetInput\":\"L_ThumbInner:Down\",\"targetChar\":\"z\"}]}",
+                            Description = "Tilt the left thumb switch south (back) to type z",
                             Number = 18,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
@@ -642,19 +645,19 @@ namespace ChordCraft.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 34,
-                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right palm switch north (away from you) to type x\",\"targetInput\":\"R_PalmUpper:Up\",\"targetChar\":\"x\"},{\"instruction\":\"Tilt the right palm switch west (to the left) to type b\",\"targetInput\":\"R_PalmUpper:Left\",\"targetChar\":\"b\"},{\"instruction\":\"Tilt the right palm switch south (toward you) to type q\",\"targetInput\":\"R_PalmUpper:Down\",\"targetChar\":\"q\"}]}",
-                            Description = "Tilt the right palm switch for x, b, and q",
+                            Content = "{\"steps\":[{\"instruction\":\"Tilt the right thumb switch north (forward) to type x\",\"targetInput\":\"R_PalmUpper:Up\",\"targetChar\":\"x\"},{\"instruction\":\"Tilt the right thumb switch south (back) to type q\",\"targetInput\":\"R_PalmUpper:Down\",\"targetChar\":\"q\"}]}",
+                            Description = "Tilt the right thumb switch for x and q",
                             Number = 19,
                             PassAccuracyThreshold = 0.80m,
                             PhaseId = 2,
-                            TargetInputs = "[\"R_PalmUpper:Up\",\"R_PalmUpper:Left\",\"R_PalmUpper:Down\"]",
-                            Title = "Right Palm: x, b & q",
+                            TargetInputs = "[\"R_PalmUpper:Up\",\"R_PalmUpper:Down\"]",
+                            Title = "Right Thumb: x & q",
                             Type = 0
                         },
                         new
                         {
                             Id = 35,
-                            Content = "{\"gameType\":\"falling-characters\",\"timeLimitSeconds\":60,\"wordPool\":[\"r\",\"i\",\"y\",\"j\",\"d\",\"p\",\"h\",\"f\",\"g\",\"w\",\"c\",\"m\",\"l\",\"k\",\"v\",\"z\",\"x\",\"b\",\"q\"]}",
+                            Content = "{\"gameType\":\"falling-characters\",\"timeLimitSeconds\":60,\"wordPool\":[\"u\",\"i\",\"y\",\"n\",\"h\",\"d\",\"f\",\"g\",\"c\",\"m\",\"l\",\"k\"]}",
                             Description = "Game challenge — all tilt directions",
                             Number = 20,
                             PassAccuracyThreshold = 0.80m,

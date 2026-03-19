@@ -2,44 +2,49 @@
 @using MudBlazor
 
 <div class="practice-lesson">
-    <MudText Typo="Typo.overline" Color="Color.Primary" Class="mb-2">PRACTICE</MudText>
 
-    @if (speedGoal.HasValue)
-    {
-        <MudText Typo="Typo.caption" Class="mb-2" Style="color: #888;">Speed goal: @speedGoal WPM</MudText>
-    }
+    @* ── Word / character display ─── *@
+    <div class="word-panel mb-4">
+        <div class="word-display text-center px-4 py-5" style="font-size: 1.6rem; letter-spacing: 0.12em;">
+            @for (int i = 0; i < text.Length; i++)
+            {
+                var idx = i;
+                var c = text[idx];
+                string cls;
+                if (idx < state.TypedCharacters.Count)
+                    cls = state.TypedCharacters[idx].IsCorrect ? "char-correct" : "char-incorrect";
+                else if (idx == state.CurrentPosition)
+                    cls = "char-current";
+                else
+                    cls = "char-upcoming";
 
-    <div class="text-display mb-6" style="font-size: 1.4rem; font-family: monospace; line-height: 2; text-align: center; max-width: 700px; margin: 0 auto;">
-        @for (int i = 0; i < text.Length; i++)
-        {
-            var idx = i;
-            var c = text[idx];
-            string color;
-            if (idx < state.TypedCharacters.Count)
-                color = state.TypedCharacters[idx].IsCorrect ? "#4caf50" : "#f44336";
-            else if (idx == state.CurrentPosition)
-                color = "#1976d2";
-            else
-                color = "#999";
-
-            <span style="color: @color; background: @(idx == state.CurrentPosition ? "#e3f2fd" : "transparent"); font-weight: @(idx == state.CurrentPosition ? "bold" : "normal");">@(c == ' ' ? ' ' : c)</span>
-        }
+                <span class="@cls">@(c == ' ' ? '\u00a0' : c)</span>
+            }
+        </div>
+        <div class="word-target-label">Target character</div>
     </div>
 
-    <div style="position: relative; max-width: 800px; margin: 0 auto;">
-        <SwitchDiagram ActiveInputs="@activeInputs" />
-        <HandOverlay ActiveFingers="@activeFingers" ActiveDirection="@activeDirection" />
+    @* ── Chord Inspector (device diagram) ─── *@
+    <div class="mb-4" style="max-width: 560px; margin: 0 auto;">
+        <ChordInspector ActiveInputs="@activeInputs" />
     </div>
 
-    <MudStack Row="true" Justify="Justify.Center" Class="mt-4" Spacing="4">
+    @* ── Stats ─── *@
+    <MudStack Row="true" Justify="Justify.Center" Spacing="4" Class="mt-3">
         <MudText Typo="Typo.body2" Style="color: #888;">
             Accuracy: @((state.Accuracy * 100).ToString("0"))%
         </MudText>
         <MudText Typo="Typo.body2" Style="color: #888;">|</MudText>
         <MudText Typo="Typo.body2" Style="color: #888;">
-            @state.CurrentPosition / @text.Length characters
+            @state.CurrentPosition / @text.Length
         </MudText>
+        @if (speedGoal.HasValue)
+        {
+            <MudText Typo="Typo.body2" Style="color: #888;">|</MudText>
+            <MudText Typo="Typo.body2" Style="color: #888;">Goal: @speedGoal WPM</MudText>
+        }
     </MudStack>
+
 </div>
 
 @code {
@@ -51,12 +56,10 @@
     private int? speedGoal;
     private TypingState state = new();
     private List<SwitchInput> activeInputs = [];
-    private List<SwitchId> activeFingers = [];
-    private SwitchDirection? activeDirection;
 
     protected override void OnParametersSet()
     {
-        var doc = JsonDocument.Parse(Content);
+        var doc  = JsonDocument.Parse(Content);
         var root = doc.RootElement;
 
         if (root.TryGetProperty("text", out var textEl))
@@ -65,7 +68,6 @@
         }
         else if (root.TryGetProperty("wordPool", out var wordPoolEl))
         {
-            // Play lessons store words in wordPool — join them into a typing sequence
             text = string.Join(" ", wordPoolEl.EnumerateArray()
                 .Select(w => w.GetString() ?? "")
                 .Where(w => w.Length > 0));
@@ -76,7 +78,7 @@
         }
 
         speedGoal = SpeedGoal;
-        state = new TypingState();
+        state     = new TypingState();
         UpdateActiveInput();
     }
 
@@ -84,18 +86,9 @@
     {
         if (state.CurrentPosition >= text.Length) return;
         var target = text[state.CurrentPosition].ToString();
-        if (CcosLayout.ReverseMap.TryGetValue(target, out var input))
-        {
-            activeInputs = [input];
-            activeFingers = [input.Switch];
-            activeDirection = input.Direction;
-        }
-        else
-        {
-            activeInputs = [];
-            activeFingers = [];
-            activeDirection = null;
-        }
+        activeInputs = CcosLayout.ReverseMap.TryGetValue(target, out var input)
+            ? [input]
+            : [];
     }
 
     [JSInvokable]
@@ -104,8 +97,8 @@
         if (state.IsComplete || state.CurrentPosition >= text.Length) return;
         state.StartTime ??= DateTime.UtcNow;
 
-        var expected = text[state.CurrentPosition];
-        var actual = key.Length == 1 ? key[0] : ' ';
+        var expected  = text[state.CurrentPosition];
+        var actual    = key.Length == 1 ? key[0] : ' ';
         var isCorrect = actual == expected;
 
         state.TypedCharacters.Add(new TypedCharacter(expected, actual, isCorrect, timestamp));
@@ -113,10 +106,9 @@
 
         if (state.CurrentPosition >= text.Length)
         {
-            state.EndTime = DateTime.UtcNow;
+            state.EndTime    = DateTime.UtcNow;
             state.IsComplete = true;
-            activeInputs = [];
-            activeFingers = [];
+            activeInputs     = [];
             await OnComplete.InvokeAsync((state.Accuracy, state.Speed));
         }
         else

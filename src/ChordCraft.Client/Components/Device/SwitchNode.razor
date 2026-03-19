@@ -1,0 +1,19 @@
+@* Inline directional switch node for the Dashboard chord inspector *@
+
+<div class="relative flex items-center justify-center @(Large ? "w-12 h-12" : "w-10 h-10") @YOffset">
+    <div class="@(Large ? "w-6 h-6" : "w-5 h-5") rounded-full bg-slate-600 shadow-inner z-10"></div>
+    <div class="absolute top-0 w-2 h-2 rounded-full @(Up ? "bg-brand shadow-[0_0_10px_rgba(0,180,216,0.5)] scale-150" : "bg-slate-500") transition-all switch-dot"></div>
+    <div class="absolute bottom-0 w-2 h-2 rounded-full @(Down ? "bg-brand shadow-[0_0_10px_rgba(0,180,216,0.5)] scale-150" : "bg-slate-500") transition-all switch-dot"></div>
+    <div class="absolute left-0 w-2 h-2 rounded-full @(Left ? "bg-brand shadow-[0_0_10px_rgba(0,180,216,0.5)] scale-150" : "bg-slate-500") transition-all switch-dot"></div>
+    <div class="absolute right-0 w-2 h-2 rounded-full @(Right ? "bg-brand shadow-[0_0_10px_rgba(0,180,216,0.5)] scale-150" : "bg-slate-500") transition-all switch-dot"></div>
+</div>
+
+@code {
+    [Parameter] public bool Up    { get; set; }
+    [Parameter] public bool Down  { get; set; }
+    [Parameter] public bool Left  { get; set; }
+    [Parameter] public bool Right { get; set; }
+    [Parameter] public bool Push  { get; set; }
+    [Parameter] public bool Large { get; set; }
+    [Parameter] public string YOffset { get; set; } = "";
+}

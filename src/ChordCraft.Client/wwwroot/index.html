@@ -8,9 +8,32 @@
     <base href="/" />
     <link rel="stylesheet" href="css/app.css" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-    <!-- If you add any scoped CSS files, uncomment the following to load them
-    <link href="ChordCraft.Client.styles.css" rel="stylesheet" /> -->
+    <link href="ChordCraft.Client.styles.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            important: '.tw',
+            theme: {
+                extend: {
+                    fontFamily: { nunito: ['Nunito', 'sans-serif'] },
+                    colors: {
+                        brand: { light: '#E0F7FA', DEFAULT: '#00B4D8', dark: '#0096B4' },
+                        accent: { DEFAULT: '#FFB703', dark: '#FB8500' },
+                        navy: { DEFAULT: '#1E293B', dark: '#0F172A' }
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        '3d': '0 4px 0 0 rgba(0,0,0,0.1)',
+                        '3d-brand': '0 4px 0 0 #0096B4',
+                        '3d-accent': '0 4px 0 0 #FB8500',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 
 <body>

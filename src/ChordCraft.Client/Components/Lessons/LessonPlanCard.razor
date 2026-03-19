@@ -1,0 +1,68 @@
+@using ChordCraft.Client.Pages
+
+@if (Card.IsNext)
+{
+    <div class="bg-white rounded-2xl p-5 shadow-[0_10px_40px_-10px_rgba(0,180,216,0.3)] border-4 border-[#00B4D8] relative flex flex-col items-center text-center transform scale-105 z-10">
+        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#00B4D8] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+            Up Next
+        </div>
+        <div class="w-16 h-16 bg-[#E0F7FA] text-[#00B4D8] rounded-full flex items-center justify-center text-2xl mb-3 relative">
+            <i class="ph-bold ph-play"></i>
+            <span class="absolute inline-flex h-full w-full rounded-full bg-[#00B4D8] opacity-20 animate-ping"></span>
+        </div>
+        <h4 class="font-bold text-[#1E293B] mb-1">@Card.Number. @Card.Title</h4>
+        <div class="flex gap-1 text-slate-300 mb-2">
+            @for (int i = 0; i < Card.MaxStars; i++) { <i class="ph-fill ph-star"></i> }
+        </div>
+        <button class="w-full mt-2 bg-[#00B4D8] text-white font-bold py-2 rounded-xl hover:bg-[#0096B4] transition-colors">Start</button>
+    </div>
+}
+else if (Card.IsLocked)
+{
+    <div class="bg-slate-50 rounded-2xl p-5 border-2 border-slate-100 border-dashed relative flex flex-col items-center text-center opacity-70">
+        <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center text-2xl mb-3">
+            <i class="ph-fill ph-lock-key"></i>
+        </div>
+        <h4 class="font-bold text-slate-500 mb-1">@Card.Number. @Card.Title</h4>
+        <div class="flex gap-1 text-slate-200 mb-2">
+            @for (int i = 0; i < Card.MaxStars; i++) { <i class="ph-fill ph-star"></i> }
+        </div>
+        <div class="text-xs font-bold text-slate-400">@Card.Score</div>
+    </div>
+}
+else
+{
+    <div class="bg-white rounded-2xl p-5 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] @(Card.Stars == Card.MaxStars ? "border-2 border-emerald-400" : "border-2 border-slate-200") relative flex flex-col items-center text-center cursor-pointer hover:-translate-y-1 transition-transform">
+        @if (Card.Stars == Card.MaxStars)
+        {
+            <div class="absolute top-2 right-2 w-6 h-6 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
+                <i class="ph-bold ph-check"></i>
+            </div>
+            <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-2xl mb-3">
+                <i class="ph-fill ph-check-circle"></i>
+            </div>
+        }
+        else
+        {
+            <div class="w-16 h-16 bg-slate-50 text-slate-600 rounded-full flex items-center justify-center text-2xl mb-3">
+                <i class="ph-fill ph-book-open"></i>
+            </div>
+        }
+        <h4 class="font-bold text-[#1E293B] mb-1">@Card.Number. @Card.Title</h4>
+        <div class="flex gap-1 text-[#FFB703] mb-2">
+            @for (int i = 0; i < Card.Stars; i++)    { <i class="ph-fill ph-star"></i> }
+            @for (int i = Card.Stars; i < Card.MaxStars; i++) { <i class="ph-regular ph-star text-slate-300"></i> }
+        </div>
+        <div class="text-xs font-bold text-slate-400">
+            @Card.Score
+            @if (Card.Stars < Card.MaxStars)
+            {
+                <span> • <span class="text-[#00B4D8] cursor-pointer hover:underline">Retry</span></span>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public Dashboard.LessonCardModel Card { get; set; } = default!;
+}

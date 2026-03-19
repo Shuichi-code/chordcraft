@@ -1,20 +1,61 @@
-html, body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
+/* ── Google Fonts ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* ── Color system ─────────────────────────────────────────── */
+:root {
+    --color-brand:       #1976d2;
+    --color-brand-light: #e3f2fd;
+    --color-accent:      #f59e0b;
+    --color-accent-dark: #d97706;
+    --color-navy:        #0f172a;
+    --color-surface:     #ffffff;
+    --color-bg:          #f1f5f9;
+    --color-slate-700:   #334155;
+    --color-slate-800:   #1e293b;
+    --color-slate-900:   #0f172a;
 }
 
-/* Prevent text selection during typing practice */
+/* ── Base ─────────────────────────────────────────────────── */
+html, body {
+    font-family: 'Nunito', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-bg);
+}
+
+/* ── Prevent text selection during practice ───────────────── */
 .practice-lesson, .review-lesson, .intro-lesson {
     user-select: none;
     -webkit-user-select: none;
 }
 
-/* Smooth page transitions */
+/* ── Page transitions ─────────────────────────────────────── */
 .page {
     animation: fadeIn 0.2s ease-in;
 }
 @keyframes fadeIn {
     from { opacity: 0; }
-    to { opacity: 1; }
+    to   { opacity: 1; }
 }
+
+/* ── Chord Inspector: switch direction dots ───────────────── */
+.switch-direction {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #475569;
+    transition: background 0.15s;
+}
+.switch-direction.dir-up    { top: 0;    left: 50%; transform: translateX(-50%); }
+.switch-direction.dir-down  { bottom: 0; left: 50%; transform: translateX(-50%); }
+.switch-direction.dir-left  { left: 0;   top: 50%;  transform: translateY(-50%); }
+.switch-direction.dir-right { right: 0;  top: 50%;  transform: translateY(-50%); }
+.switch-direction.active    { background: #60a5fa; }
+
+/* ── Chord Inspector: word display ───────────────────────── */
+.word-display { font-family: 'Courier New', monospace; }
+.char-correct  { color: #4ade80; }
+.char-incorrect{ color: #f87171; }
+.char-current  { color: #60a5fa; font-weight: 900; border-bottom: 3px solid #60a5fa; }
+.char-upcoming { color: #475569; opacity: 0.6; }

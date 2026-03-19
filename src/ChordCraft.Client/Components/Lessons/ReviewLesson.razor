@@ -22,8 +22,7 @@
     </div>
 
     <div style="position: relative; max-width: 800px; margin: 0 auto;">
-        <SwitchDiagram ActiveInputs="@activeInputs" />
-        <HandOverlay ActiveFingers="@activeFingers" ActiveDirection="@activeDirection" />
+        <ChordInspector ActiveInputs="@activeInputs" />
     </div>
 
     <MudText Typo="Typo.body2" Align="Align.Center" Class="mt-4" Style="color: #888;">
@@ -40,8 +39,6 @@
     private List<bool> typedResults = [];
     private DateTime? startTime;
     private List<SwitchInput> activeInputs = [];
-    private List<SwitchId> activeFingers = [];
-    private SwitchDirection? activeDirection;
 
     protected override void OnParametersSet()
     {
@@ -58,8 +55,6 @@
         if (CcosLayout.ReverseMap.TryGetValue(target, out var input))
         {
             activeInputs = [input];
-            activeFingers = [input.Switch];
-            activeDirection = input.Direction;
         }
     }
 
@@ -76,7 +71,6 @@
         if (currentPos >= sequence.Count)
         {
             activeInputs = [];
-            activeFingers = [];
             var elapsed = (DateTime.UtcNow - startTime.Value).TotalMinutes;
             var accuracy = (decimal)typedResults.Count(r => r) / typedResults.Count;
             var wpm = elapsed > 0 ? (decimal)(typedResults.Count / 5.0 / elapsed) : 0m;
