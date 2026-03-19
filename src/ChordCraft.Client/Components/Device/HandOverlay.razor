@@ -1,74 +1,102 @@
 <svg viewBox="0 0 800 200" class="hand-overlay" xmlns="http://www.w3.org/2000/svg"
      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
 
-    @* Left hand - simplified finger indicators *@
-    @foreach (var (switchId, pos) in FingerPositions.Where(f => f.Id.ToString().StartsWith("L_")))
-    {
-        var isActive = ActiveFingers.Contains(switchId);
-        <circle cx="@pos.X" cy="@(pos.Y + 40)" r="15"
-                fill="@(isActive ? "rgba(25, 118, 210, 0.3)" : "rgba(150, 150, 150, 0.15)")"
-                stroke="@(isActive ? "#1976d2" : "transparent")" stroke-width="1.5"
-                style="transition: fill 0.3s, stroke 0.3s;" />
-
-        @if (isActive && ActiveDirection.HasValue)
-        {
-            @* Direction arrow *@
-            var (dx, dy) = GetArrowOffset(ActiveDirection.Value);
-            <line x1="@pos.X" y1="@(pos.Y + 40)"
-                  x2="@(pos.X + dx)" y2="@(pos.Y + 40 + dy)"
-                  stroke="#1976d2" stroke-width="2.5" stroke-linecap="round"
-                  marker-end="url(#arrowhead)" />
-        }
-    }
-
-    @* Right hand *@
-    @foreach (var (switchId, pos) in FingerPositions.Where(f => f.Id.ToString().StartsWith("R_")))
-    {
-        var isActive = ActiveFingers.Contains(switchId);
-        <circle cx="@pos.X" cy="@(pos.Y + 40)" r="15"
-                fill="@(isActive ? "rgba(25, 118, 210, 0.3)" : "rgba(150, 150, 150, 0.15)")"
-                stroke="@(isActive ? "#1976d2" : "transparent")" stroke-width="1.5"
-                style="transition: fill 0.3s, stroke 0.3s;" />
-
-        @if (isActive && ActiveDirection.HasValue)
-        {
-            var (dx, dy) = GetArrowOffset(ActiveDirection.Value);
-            <line x1="@pos.X" y1="@(pos.Y + 40)"
-                  x2="@(pos.X + dx)" y2="@(pos.Y + 40 + dy)"
-                  stroke="#1976d2" stroke-width="2.5" stroke-linecap="round" />
-        }
-    }
-
-    @* Arrow marker definition *@
     <defs>
-        <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+        <marker id="arrowhead-hand" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
             <polygon points="0 0, 6 2, 0 4" fill="#1976d2" />
         </marker>
     </defs>
+
+    @* Left palm silhouette *@
+    <ellipse cx="155" cy="168" rx="110" ry="24"
+             fill="@(AnyLeftActive ? "rgba(25,118,210,0.08)" : "rgba(180,180,180,0.12)")"
+             stroke="@(AnyLeftActive ? "rgba(25,118,210,0.25)" : "rgba(150,150,150,0.18)")"
+             stroke-width="1" />
+
+    @* Left hand finger pads *@
+    @foreach (var f in LeftFingers)
+    {
+        var isActive = ActiveFingers.Contains(f.Id);
+        <g transform="translate(@f.X, @f.Y) rotate(@f.Angle)">
+            <rect x="-9" y="-22" width="18" height="30" rx="9"
+                  fill="@(isActive ? "rgba(25,118,210,0.55)" : "rgba(160,160,160,0.28)")"
+                  stroke="@(isActive ? "#1976d2" : "rgba(100,100,100,0.22)")"
+                  stroke-width="@(isActive ? "2" : "1")"
+                  style="transition: fill 0.25s, stroke 0.25s;" />
+        </g>
+        @if (isActive && ActiveDirection.HasValue)
+        {
+            var (dx, dy) = GetArrowOffset(ActiveDirection.Value);
+            <line x1="@f.X" y1="@f.Y"
+                  x2="@(f.X + dx)" y2="@(f.Y + dy)"
+                  stroke="#1976d2" stroke-width="2.5" stroke-linecap="round"
+                  marker-end="url(#arrowhead-hand)" />
+        }
+    }
+
+    @* Right palm silhouette *@
+    <ellipse cx="645" cy="168" rx="110" ry="24"
+             fill="@(AnyRightActive ? "rgba(25,118,210,0.08)" : "rgba(180,180,180,0.12)")"
+             stroke="@(AnyRightActive ? "rgba(25,118,210,0.25)" : "rgba(150,150,150,0.18)")"
+             stroke-width="1" />
+
+    @* Right hand finger pads *@
+    @foreach (var f in RightFingers)
+    {
+        var isActive = ActiveFingers.Contains(f.Id);
+        <g transform="translate(@f.X, @f.Y) rotate(@f.Angle)">
+            <rect x="-9" y="-22" width="18" height="30" rx="9"
+                  fill="@(isActive ? "rgba(25,118,210,0.55)" : "rgba(160,160,160,0.28)")"
+                  stroke="@(isActive ? "#1976d2" : "rgba(100,100,100,0.22)")"
+                  stroke-width="@(isActive ? "2" : "1")"
+                  style="transition: fill 0.25s, stroke 0.25s;" />
+        </g>
+        @if (isActive && ActiveDirection.HasValue)
+        {
+            var (dx, dy) = GetArrowOffset(ActiveDirection.Value);
+            <line x1="@f.X" y1="@f.Y"
+                  x2="@(f.X + dx)" y2="@(f.Y + dy)"
+                  stroke="#1976d2" stroke-width="2.5" stroke-linecap="round"
+                  marker-end="url(#arrowhead-hand)" />
+        }
+    }
+
 </svg>
 
 @code {
     [Parameter] public List<SwitchId> ActiveFingers { get; set; } = [];
     [Parameter] public SwitchDirection? ActiveDirection { get; set; }
 
-    // Same positions as SwitchDiagram
-    private static readonly List<(SwitchId Id, (int X, int Y) Pos)> FingerPositions =
+    private record FingerConfig(SwitchId Id, int X, int Y, int Angle);
+
+    private static readonly List<FingerConfig> LeftFingers =
     [
-        (SwitchId.L_Pinky, (50, 100)), (SwitchId.L_Ring, (110, 80)),
-        (SwitchId.L_Middle, (170, 65)), (SwitchId.L_Index, (230, 80)),
-        (SwitchId.L_Thumb, (260, 150)),
-        (SwitchId.R_Thumb, (540, 150)),
-        (SwitchId.R_Index, (570, 80)), (SwitchId.R_Middle, (630, 65)),
-        (SwitchId.R_Ring, (690, 80)), (SwitchId.R_Pinky, (750, 100)),
+        new(SwitchId.L_Pinky,  50,  100, -20),
+        new(SwitchId.L_Ring,  110,   80, -10),
+        new(SwitchId.L_Middle, 170,  65,   0),
+        new(SwitchId.L_Index,  230,  80,  10),
+        new(SwitchId.L_Thumb,  260, 150,  55),
     ];
+
+    private static readonly List<FingerConfig> RightFingers =
+    [
+        new(SwitchId.R_Thumb,  540, 150, -55),
+        new(SwitchId.R_Index,  570,  80, -10),
+        new(SwitchId.R_Middle, 630,  65,   0),
+        new(SwitchId.R_Ring,   690,  80,  10),
+        new(SwitchId.R_Pinky,  750, 100,  20),
+    ];
+
+    private bool AnyLeftActive => ActiveFingers.Any(f => LeftFingers.Any(lf => lf.Id == f));
+    private bool AnyRightActive => ActiveFingers.Any(f => RightFingers.Any(rf => rf.Id == f));
 
     private static (int X, int Y) GetArrowOffset(SwitchDirection dir) => dir switch
     {
-        SwitchDirection.Up => (0, -18),
-        SwitchDirection.Down => (0, 18),
-        SwitchDirection.Left => (-18, 0),
-        SwitchDirection.Right => (18, 0),
-        SwitchDirection.Push => (0, 10),
+        SwitchDirection.Up    => (0,  -22),
+        SwitchDirection.Down  => (0,   22),
+        SwitchDirection.Left  => (-22,  0),
+        SwitchDirection.Right => (22,   0),
+        SwitchDirection.Push  => (0,    0),
         _ => (0, 0)
     };
 }
