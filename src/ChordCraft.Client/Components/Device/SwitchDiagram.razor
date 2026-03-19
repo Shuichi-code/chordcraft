@@ -7,14 +7,14 @@
         var label = GetSwitchLabel(switchId);
 
         <g transform="translate(@pos.X, @pos.Y)">
-            <circle r="28" class="@(isActive ? "switch active" : "switch")"
+            <circle r="22" class="@(isActive ? "switch active" : "switch")"
                     fill="@(isActive ? "#1976d2" : "#e0e0e0")"
                     stroke="@(isActive ? "#1565c0" : "#bbb")" stroke-width="2" />
             <text text-anchor="middle" dy="5" class="switch-char"
-                  fill="@(isActive ? "white" : "#555")" font-size="14" font-weight="bold">
+                  fill="@(isActive ? "white" : "#555")" font-size="12" font-weight="bold">
                 @(pushChar.Length == 1 && !char.IsControl(pushChar[0]) ? pushChar : label)
             </text>
-            <text text-anchor="middle" dy="-34" class="switch-label"
+            <text text-anchor="middle" dy="-28" class="switch-label"
                   fill="#999" font-size="9">@label</text>
 
             @if (isActive)
@@ -33,14 +33,14 @@
         var label = GetSwitchLabel(switchId);
 
         <g transform="translate(@pos.X, @pos.Y)">
-            <circle r="28" class="@(isActive ? "switch active" : "switch")"
+            <circle r="22" class="@(isActive ? "switch active" : "switch")"
                     fill="@(isActive ? "#1976d2" : "#e0e0e0")"
                     stroke="@(isActive ? "#1565c0" : "#bbb")" stroke-width="2" />
             <text text-anchor="middle" dy="5" class="switch-char"
-                  fill="@(isActive ? "white" : "#555")" font-size="14" font-weight="bold">
+                  fill="@(isActive ? "white" : "#555")" font-size="12" font-weight="bold">
                 @(pushChar.Length == 1 && !char.IsControl(pushChar[0]) ? pushChar : label)
             </text>
-            <text text-anchor="middle" dy="-34" class="switch-label"
+            <text text-anchor="middle" dy="-28" class="switch-label"
                   fill="#999" font-size="9">@label</text>
 
             @if (isActive)
@@ -61,24 +61,24 @@
         (SwitchId.L_Ring,       (110, 80)),
         (SwitchId.L_Middle,     (170, 65)),
         (SwitchId.L_Index,      (230, 80)),
-        (SwitchId.L_Thumb,      (260, 150)),
-        (SwitchId.L_ThumbInner, (200, 155)),
-        (SwitchId.L_PalmUpper,  (130, 145)),
-        (SwitchId.L_PalmLower,  (70,  155)),
-        (SwitchId.L_Edge,       (30,  145)),
+        (SwitchId.L_Thumb,      (268, 148)),
+        (SwitchId.L_ThumbInner, (210, 163)),
+        (SwitchId.L_PalmUpper,  (138, 155)),
+        (SwitchId.L_PalmLower,  (70,  162)),
+        (SwitchId.L_Edge,       (28,  143)),
     ];
 
     private static readonly List<(SwitchId Id, (int X, int Y) Pos)> RightHandPositions =
     [
-        (SwitchId.R_Thumb,      (540, 150)),
-        (SwitchId.R_ThumbInner, (600, 155)),
+        (SwitchId.R_Thumb,      (532, 148)),
+        (SwitchId.R_ThumbInner, (590, 163)),
         (SwitchId.R_Index,      (570, 80)),
         (SwitchId.R_Middle,     (630, 65)),
         (SwitchId.R_Ring,       (690, 80)),
         (SwitchId.R_Pinky,      (750, 100)),
-        (SwitchId.R_PalmUpper,  (670, 145)),
-        (SwitchId.R_PalmLower,  (730, 155)),
-        (SwitchId.R_Edge,       (770, 145)),
+        (SwitchId.R_PalmUpper,  (662, 155)),
+        (SwitchId.R_PalmLower,  (730, 162)),
+        (SwitchId.R_Edge,       (772, 143)),
     ];
 
     private static string GetSwitchLabel(SwitchId id) => id switch

@@ -8,7 +8,7 @@
     </defs>
 
     @* Left palm silhouette *@
-    <ellipse cx="155" cy="168" rx="110" ry="24"
+    <ellipse cx="148" cy="162" rx="115" ry="26"
              fill="@(AnyLeftActive ? "rgba(25,118,210,0.08)" : "rgba(180,180,180,0.12)")"
              stroke="@(AnyLeftActive ? "rgba(25,118,210,0.25)" : "rgba(150,150,150,0.18)")"
              stroke-width="1" />
@@ -35,7 +35,7 @@
     }
 
     @* Right palm silhouette *@
-    <ellipse cx="645" cy="168" rx="110" ry="24"
+    <ellipse cx="652" cy="162" rx="115" ry="26"
              fill="@(AnyRightActive ? "rgba(25,118,210,0.08)" : "rgba(180,180,180,0.12)")"
              stroke="@(AnyRightActive ? "rgba(25,118,210,0.25)" : "rgba(150,150,150,0.18)")"
              stroke-width="1" />
@@ -75,12 +75,12 @@
         new(SwitchId.L_Ring,  110,   80, -10),
         new(SwitchId.L_Middle, 170,  65,   0),
         new(SwitchId.L_Index,  230,  80,  10),
-        new(SwitchId.L_Thumb,  260, 150,  55),
+        new(SwitchId.L_Thumb,  268, 148,  55),
     ];
 
     private static readonly List<FingerConfig> RightFingers =
     [
-        new(SwitchId.R_Thumb,  540, 150, -55),
+        new(SwitchId.R_Thumb,  532, 148, -55),
         new(SwitchId.R_Index,  570,  80, -10),
         new(SwitchId.R_Middle, 630,  65,   0),
         new(SwitchId.R_Ring,   690,  80,  10),
