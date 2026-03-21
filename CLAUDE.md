@@ -87,6 +87,18 @@ Scoped CSS files (`.razor.css`) are used for component-level styles. Use `paddin
 
 - `src/ChordCraft.Client/Models/LessonCardModel.cs` — `record` used by `LessonPlanCard` component (moved from nested type in old Dashboard)
 
+## Pages Redesigned (blue Duolingo theme)
+
+| Page | File | Notes |
+|------|------|-------|
+| Landing | `Pages/Landing.razor` + `.css` | Custom navbar, hero, stats, phases scroll, footer CTA |
+| Dashboard | `Pages/Dashboard.razor` + `.css` | Streak/stars/badges cards, phase rings, achievements |
+| Login | `Pages/Login.razor` + `.css` | Centered card with icon header, styled inputs |
+| Register | `Pages/Register.razor` + `.css` | Same card style, side-by-side password fields |
+| LessonCatalog | `Pages/LessonCatalog.razor` + `.css` | Progress banner, phase pill badges, circular lesson nodes |
+
+`LessonCard` component (`Components/Lessons/LessonCard.razor`) redesigned as Duolingo-style circular nodes: yellow = active/next, blue = completed, gray = locked.
+
 ## Domain Model
 
 - **User** — extends `IdentityUser<Guid>`. All user IDs are `Guid`.
