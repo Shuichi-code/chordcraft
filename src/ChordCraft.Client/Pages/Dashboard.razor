@@ -1,293 +1,277 @@
 @page "/dashboard"
-@layout DashboardLayout
-@using ChordCraft.Core.Models
-@using ChordCraft.Core.Enums
+@layout LandingLayout
 @inject NavigationManager Navigation
+@inject AuthStateService Auth
+@inject IClientProgressService Progress
 
-<div class="tw min-h-screen flex flex-col font-nunito antialiased" style="background-color:#F8FAFC;color:#1E293B;">
+<div class="tw min-h-screen pb-24 antialiased" style="background-color:#F0F4FF; font-family:'Nunito',sans-serif; color:#0D47A1;">
 
-    @* ── Header ── *@
-    <header class="bg-white border-b-2 border-slate-100 sticky top-0 z-50">
-        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+    @* ── Navbar ── *@
+    <nav style="background:white; border-bottom:2px solid #E5E7EB; position:sticky; top:0; z-index:50;">
+        <div class="max-w-[900px] mx-auto px-6 flex items-center justify-between" style="height:80px;">
 
-            <div class="flex items-center gap-3 cursor-pointer" @onclick='() => Navigation.NavigateTo("/")'>
-                <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-white shadow-[0_4px_0_0_#0096B4] transition-transform active:translate-y-1">
-                    <i class="ph-bold ph-keyboard text-2xl"></i>
+            <div class="flex items-center gap-2 cursor-pointer" @onclick='() => Navigation.NavigateTo("/")'>
+                <div style="width:40px;height:40px;background:#1565C0;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 0 0 #0D47A1;">
+                    <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#FFD54F;"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/></svg>
                 </div>
-                <h1 class="text-2xl font-black tracking-tight text-navy">
-                    Chara<span class="text-brand">Club</span>
-                </h1>
+                <span style="color:#1565C0;font-weight:900;font-size:1.5rem;letter-spacing:-0.05em;">ChordCraft</span>
             </div>
 
-            <nav class="hidden lg:flex items-center gap-2">
-                <a href="/dashboard" class="px-5 py-2.5 rounded-full bg-slate-100 text-brand font-bold flex items-center gap-2">
-                    <i class="ph-fill ph-map-trifold text-lg"></i> Lesson Plan
+            <div class="hidden md:flex items-center gap-8">
+                <a href="/lessons" style="color:#1565C0;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;font-size:0.9rem;text-decoration:none;position:relative;">
+                    Lessons
+                    <span style="position:absolute;bottom:-28px;left:0;width:100%;height:3px;background:#1565C0;border-radius:3px 3px 0 0;"></span>
                 </a>
-                <a href="/stats" class="px-5 py-2.5 rounded-full text-slate-500 font-bold hover:bg-slate-50 hover:text-slate-700 transition-colors flex items-center gap-2">
-                    <i class="ph-bold ph-chart-line-up text-lg"></i> Stats
-                </a>
-                <a href="/badges" class="px-5 py-2.5 rounded-full text-slate-500 font-bold hover:bg-slate-50 hover:text-slate-700 transition-colors flex items-center gap-2">
-                    <i class="ph-bold ph-medal text-lg"></i> Badges
-                </a>
-                <a href="#" class="px-5 py-2.5 rounded-full text-slate-500 font-bold hover:bg-slate-50 hover:text-slate-700 transition-colors flex items-center gap-2">
-                    <i class="ph-bold ph-game-controller text-lg"></i> Games
-                </a>
-            </nav>
+                <a href="/stats" style="color:#9CA3AF;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;font-size:0.9rem;text-decoration:none;">Stats</a>
+                <a href="/badges" style="color:#9CA3AF;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;font-size:0.9rem;text-decoration:none;">Badges</a>
+            </div>
 
-            <div class="flex items-center gap-6">
-                <div class="flex items-center gap-1.5 font-bold text-orange-500 bg-orange-50 px-3 py-1.5 rounded-full border border-orange-100">
-                    <i class="ph-fill ph-fire text-xl"></i>
-                    <span>14 Days</span>
-                </div>
-                <div class="flex items-center gap-3 cursor-pointer group">
-                    <div class="text-right hidden sm:block">
-                        <div class="text-sm font-bold text-navy">Alex Typist</div>
-                        <div class="text-xs font-bold text-brand uppercase tracking-wider">Level 8</div>
+            <div class="flex items-center gap-4">
+                @if (Auth.IsAuthenticated)
+                {
+                    <span style="font-weight:800;color:#0D47A1;font-size:0.95rem;">@Auth.DisplayName</span>
+                    <div style="width:40px;height:40px;border-radius:50%;background:#42A5F5;border:2px solid #E5E7EB;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;cursor:pointer;">
+                        @(Auth.DisplayName?.Length > 0 ? Auth.DisplayName[0].ToString().ToUpper() : "?")
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-brand-light border-4 border-white shadow-md flex items-center justify-center text-brand font-black text-lg group-hover:scale-105 transition-transform">
-                        A
-                    </div>
-                </div>
+                }
+                else
+                {
+                    <a href="/login" style="color:#9CA3AF;font-weight:800;text-decoration:none;">Login</a>
+                    <a href="/register" class="btn-accent-nav">Sign Up</a>
+                }
             </div>
         </div>
-    </header>
+    </nav>
 
     @* ── Main ── *@
-    <main class="flex-1 w-full max-w-[1440px] mx-auto px-6 py-8 flex gap-8">
+    <main class="max-w-[900px] mx-auto px-4 pt-10 flex flex-col gap-10" style="padding-bottom:60px;">
 
-        @* Left column *@
-        <div class="flex-1 flex flex-col gap-8">
+        @* ── Welcome ── *@
+        <section class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h1 style="font-size:clamp(1.8rem,4vw,2.5rem);font-weight:900;color:#0D47A1;letter-spacing:-0.02em;margin-bottom:8px;">
+                    Welcome back, @(Auth.DisplayName ?? "Learner")! 👋
+                </h1>
+                <p style="font-size:1.1rem;font-weight:800;color:#9CA3AF;">Keep your streak alive.</p>
+            </div>
+            <a href="/lessons" class="db-btn-accent">
+                Continue Learning
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+        </section>
 
-            @* Hero card *@
-            <div class="bg-white rounded-3xl p-8 shadow-soft border border-slate-100 relative overflow-hidden flex items-center justify-between">
-                <div class="absolute -right-20 -top-20 w-64 h-64 bg-brand-light rounded-full opacity-50"></div>
-                <div class="absolute right-20 -bottom-10 w-32 h-32 bg-yellow-50 rounded-full opacity-50"></div>
-
-                <div class="relative z-10 max-w-xl">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-light text-brand font-bold text-sm mb-4">
-                        <i class="ph-fill ph-star"></i> Current Focus
-                    </div>
-                    <h2 class="text-3xl font-black text-navy mb-2">Lesson 14: Common Digraphs</h2>
-                    <p class="text-slate-500 font-semibold mb-6 text-lg">Master chords for frequently paired letters like 'th', 'he', and 'in' to boost your speed.</p>
-                    <button @onclick='() => Navigation.NavigateTo("/lessons/14")'
-                            class="bg-accent text-white font-black text-lg px-8 py-4 rounded-2xl shadow-[0_4px_0_0_#FB8500] flex items-center gap-3 hover:bg-accent-dark transition-transform active:translate-y-1">
-                        <i class="ph-bold ph-play"></i>
-                        Resume Practice
-                    </button>
+        @* ── Streak / XP / Badges ── *@
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="db-stat-card">
+                <div style="width:48px;height:48px;border-radius:16px;background:#FFF3E0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#FF9800" stroke="#F57C00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
                 </div>
-
-                <div class="relative z-10 w-48 h-48 bg-slate-50 rounded-full border-4 border-white shadow-lg flex items-center justify-center mr-8">
-                    <i class="ph-duotone ph-robot text-7xl text-brand"></i>
-                    <div class="absolute -top-2 -right-2 bg-white rounded-xl shadow-md p-2 transform rotate-12">
-                        <span class="text-xl">🚀</span>
-                    </div>
+                <div>
+                    <div style="font-size:1.5rem;font-weight:900;color:#0D47A1;line-height:1.1;">7</div>
+                    <div style="font-size:0.75rem;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.08em;">Day Streak</div>
                 </div>
             </div>
 
-            @* Chord Inspector *@
-            <div class="bg-navy rounded-3xl p-8 shadow-soft relative overflow-hidden flex flex-col">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-white font-bold text-xl flex items-center gap-2">
-                        <i class="ph-bold ph-crosshair"></i> Chord Inspector
-                    </h3>
-                    <div class="flex gap-2">
-                        <button class="w-10 h-10 rounded-full bg-slate-700 text-white flex items-center justify-center hover:bg-slate-600 transition">
-                            <i class="ph-bold ph-speaker-high"></i>
-                        </button>
-                        <button class="w-10 h-10 rounded-full bg-slate-700 text-white flex items-center justify-center hover:bg-slate-600 transition">
-                            <i class="ph-bold ph-keyboard"></i>
-                        </button>
-                    </div>
+            <div class="db-stat-card">
+                <div style="width:48px;height:48px;border-radius:16px;background:#FFF8E1;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="#FFD54F" stroke="#FBC02D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 </div>
-
-                @* Target word display *@
-                <div class="bg-slate-800 rounded-2xl p-6 mb-8 text-center shadow-inner">
-                    <div class="text-4xl font-black tracking-widest font-mono">
-                        <span class="text-slate-500">w a s </span>
-                        <span class="text-brand border-b-4 border-brand pb-1">t h e</span>
-                        <span class="text-slate-600 opacity-50"> b e s t</span>
-                    </div>
-                    <div class="text-brand font-bold mt-4 uppercase tracking-widest text-sm">Target Word</div>
-                </div>
-
-                @* Hand panels *@
-                <div class="bg-[#2A3649] rounded-2xl p-8 flex justify-center gap-16 relative">
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-2 bg-slate-700 rounded-full z-0"></div>
-
-                    @* Left hand *@
-                    <div class="bg-slate-800 border-4 border-slate-700 w-64 h-64 rounded-[3rem] rounded-tr-xl flex flex-col items-center justify-center relative z-10 shadow-lg">
-                        <div class="text-slate-500 font-bold uppercase text-xs absolute top-4">Left Hand</div>
-                        <div class="flex gap-2 mt-4 -rotate-6">
-                            @foreach (var s in _leftFingers)
-                            {
-                                <SwitchNode Up="@s.Up" Down="@s.Down" Left="@s.Left" Right="@s.Right" Push="@s.Push" YOffset="@s.YOffset" />
-                            }
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center mt-8 ml-12">
-                            <SwitchNode Up="@_leftThumb.Up" Down="@_leftThumb.Down" Left="@_leftThumb.Left" Right="@_leftThumb.Right" Large="true" />
-                        </div>
-                    </div>
-
-                    @* Right hand *@
-                    <div class="bg-slate-800 border-4 border-slate-700 w-64 h-64 rounded-[3rem] rounded-tl-xl flex flex-col items-center justify-center relative z-10 shadow-lg">
-                        <div class="text-slate-500 font-bold uppercase text-xs absolute top-4">Right Hand</div>
-                        <div class="flex gap-2 mt-4 rotate-6">
-                            @foreach (var s in _rightFingers)
-                            {
-                                <SwitchNode Up="@s.Up" Down="@s.Down" Left="@s.Left" Right="@s.Right" Push="@s.Push" YOffset="@s.YOffset" />
-                            }
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center mt-8 mr-12">
-                            <SwitchNode Up="@_rightThumb.Up" Down="@_rightThumb.Down" Left="@_rightThumb.Left" Right="@_rightThumb.Right" Large="true" />
-                        </div>
-                    </div>
+                <div>
+                    <div style="font-size:1.5rem;font-weight:900;color:#0D47A1;line-height:1.1;">@_totalStars</div>
+                    <div style="font-size:0.75rem;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.08em;">Total Stars</div>
                 </div>
             </div>
 
-            @* Module grid *@
-            <div class="mb-12">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-black text-navy">Module 2: The Core Chords</h2>
-                    <button class="text-brand font-bold hover:underline">View Full Map</button>
+            <div class="db-stat-card">
+                <div style="width:48px;height:48px;border-radius:16px;background:#E3F2FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#42A5F5" stroke="#1E88E5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-                    @foreach (var card in _lessonCards)
-                    {
-                        <LessonPlanCard Card="@card" />
-                    }
-
+                <div>
+                    <div style="font-size:1.5rem;font-weight:900;color:#0D47A1;line-height:1.1;">4</div>
+                    <div style="font-size:0.75rem;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.08em;">Badges</div>
                 </div>
             </div>
+        </section>
 
-        </div>
+        @* ── Jump Back In ── *@
+        <section>
+            <h2 class="db-section-heading">Jump Back In</h2>
+            <div class="db-card-lg" style="display:flex;flex-direction:column;gap:24px;position:relative;overflow:hidden;">
+                <div style="position:absolute;right:-40px;top:-40px;width:160px;height:160px;background:#F0F4FF;border-radius:50%;opacity:0.5;pointer-events:none;"></div>
+                <div style="position:absolute;right:80px;bottom:-40px;width:96px;height:96px;background:#EFF6FF;border-radius:50%;opacity:0.5;pointer-events:none;"></div>
 
-        @* Sidebar *@
-        <aside class="w-80 flex-shrink-0 flex flex-col gap-6">
-
-            @* Daily goal *@
-            <div class="bg-white rounded-3xl p-6 shadow-soft text-center border border-slate-100">
-                <h3 class="font-bold text-navy mb-4 text-lg">Daily Practice Goal</h3>
-                <div class="relative w-32 h-32 mx-auto mb-4">
-                    <svg class="w-full h-full" viewBox="0 0 100 100">
-                        <circle class="text-slate-100 stroke-current" stroke-width="8" cx="50" cy="50" r="40" fill="transparent"></circle>
-                        <circle class="text-accent stroke-current" stroke-width="8" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent"
-                                stroke-dasharray="251.2" stroke-dashoffset="62.8"
-                                style="transition:stroke-dashoffset 0.35s;transform:rotate(-90deg);transform-origin:50% 50%;"></circle>
-                    </svg>
-                    <div class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
-                        <span class="text-3xl font-black text-navy">15</span>
-                        <span class="text-xs font-bold text-slate-400 uppercase">Mins</span>
+                <div style="position:relative;z-index:1;flex:1;">
+                    <div style="display:inline-flex;align-items:center;gap:8px;background:#EFF6FF;color:#42A5F5;padding:4px 12px;border-radius:8px;font-size:0.8rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Phase 2: Chords
+                    </div>
+                    <h3 style="font-size:1.75rem;font-weight:900;color:#0D47A1;letter-spacing:-0.02em;margin-bottom:16px;">Lesson 4: Common Words 1</h3>
+                    <div style="max-width:400px;">
+                        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:800;color:#9CA3AF;margin-bottom:8px;">
+                            <span>Progress</span><span style="color:#42A5F5;">60%</span>
+                        </div>
+                        <div style="height:14px;background:#F3F4F6;border-radius:999px;overflow:hidden;">
+                            <div style="height:100%;width:60%;background:#42A5F5;border-radius:999px;"></div>
+                        </div>
                     </div>
                 </div>
-                <p class="text-slate-500 font-bold text-sm">5 mins remaining today!</p>
-            </div>
 
-            @* Performance *@
-            <div class="bg-white rounded-3xl p-6 shadow-soft border border-slate-100">
-                <h3 class="font-bold text-navy mb-4 text-lg flex items-center justify-between">
-                    Performance
-                    <a href="/stats" class="text-brand text-sm hover:underline">Details</a>
-                </h3>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl">
-                        <div class="w-12 h-12 bg-blue-100 text-blue-500 rounded-xl flex items-center justify-center text-xl">
-                            <i class="ph-bold ph-speedometer"></i>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-black text-navy leading-none">64 <span class="text-sm font-bold text-slate-400 uppercase">WPM</span></div>
-                            <div class="text-xs font-bold text-emerald-500 flex items-center gap-1 mt-1">
-                                <i class="ph-bold ph-trend-up"></i> +4 from last week
+                <div style="position:relative;z-index:1;">
+                    <a href="/lessons/4" class="db-btn-accent">Resume</a>
+                </div>
+            </div>
+        </section>
+
+        @* ── Phase Progress ── *@
+        <section>
+            <h2 class="db-section-heading">Your Progress</h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+
+                @* Phase 1 — complete *@
+                <div class="db-phase-card" style="cursor:pointer;" @onclick='() => Navigation.NavigateTo("/lessons")'>
+                    <div class="db-ring-wrap">
+                        <svg viewBox="0 0 100 100" style="width:72px;height:72px;">
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#42A5F5" stroke-width="8" stroke-linecap="round"
+                                    stroke-dasharray="251.2" stroke-dashoffset="0" class="db-ring"/>
+                        </svg>
+                        <div class="db-ring-inner">
+                            <div style="width:36px;height:36px;background:#42A5F5;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl">
-                        <div class="w-12 h-12 bg-emerald-100 text-emerald-500 rounded-xl flex items-center justify-center text-xl">
-                            <i class="ph-bold ph-target"></i>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-black text-navy leading-none">96<span class="text-sm font-bold text-slate-400">%</span></div>
-                            <div class="text-xs font-bold text-slate-400 mt-1">Overall Accuracy</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl">
-                        <div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-xl flex items-center justify-center text-xl">
-                            <i class="ph-bold ph-star"></i>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-black text-navy leading-none">142</div>
-                            <div class="text-xs font-bold text-slate-400 mt-1">Total Stars Earned</div>
-                        </div>
-                    </div>
+                    <h4 style="font-weight:900;color:#0D47A1;font-size:1rem;">Phase 1</h4>
+                    <span style="font-size:0.7rem;font-weight:800;color:#9CA3AF;text-transform:uppercase;">10/10 Lessons</span>
                 </div>
-            </div>
 
-            @* Badges *@
-            <div class="bg-white rounded-3xl p-6 shadow-soft border border-slate-100">
-                <h3 class="font-bold text-navy mb-4 text-lg">Recent Badges</h3>
-                <div class="flex justify-between">
-                    @foreach (var b in _badges)
-                    {
-                        <div class="flex flex-col items-center gap-2 group cursor-pointer">
-                            <div class="w-14 h-14 rounded-full p-1 shadow-md group-hover:scale-110 transition-transform @b.GradientClass">
-                                <div class="w-full h-full bg-white rounded-full flex items-center justify-center">
-                                    <i class="@b.IconClass text-2xl @b.IconColor"></i>
-                                </div>
+                @* Phase 2 — current *@
+                <div class="db-phase-card" style="border-color:#1565C0;border-bottom:4px solid #1565C0;box-shadow:0 4px 0 0 #1565C0;cursor:pointer;position:relative;" @onclick='() => Navigation.NavigateTo("/lessons")'>
+                    <div style="position:absolute;top:-14px;background:#1565C0;color:white;font-size:0.65rem;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;padding:3px 12px;border-radius:999px;border:2px solid white;">Current</div>
+                    <div class="db-ring-wrap" style="margin-top:8px;">
+                        <svg viewBox="0 0 100 100" style="width:72px;height:72px;">
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#42A5F5" stroke-width="8" stroke-linecap="round"
+                                    stroke-dasharray="251.2" stroke-dashoffset="100.48" class="db-ring"/>
+                        </svg>
+                        <div class="db-ring-inner">
+                            <span style="font-weight:900;font-size:1.25rem;color:#1565C0;">2</span>
+                        </div>
+                    </div>
+                    <h4 style="font-weight:900;color:#0D47A1;font-size:1rem;">Phase 2</h4>
+                    <span style="font-size:0.7rem;font-weight:800;color:#1565C0;text-transform:uppercase;">3/5 Lessons</span>
+                </div>
+
+                @* Phases 3–5 — locked *@
+                @foreach (var (label, total) in new[] { ("Phase 3","0/8"), ("Phase 4","0/12"), ("Phase 5","0/15") })
+                {
+                    <div class="db-phase-card" style="background:#F9FAFB;opacity:0.8;cursor:not-allowed;">
+                        <div class="db-ring-wrap">
+                            <svg viewBox="0 0 100 100" style="width:72px;height:72px;">
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                            </svg>
+                            <div class="db-ring-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                             </div>
-                            <span class="text-xs font-bold text-slate-600 text-center leading-tight">@((MarkupString)b.Label)</span>
                         </div>
-                    }
+                        <h4 style="font-weight:900;color:#9CA3AF;font-size:1rem;">@label</h4>
+                        <span style="font-size:0.7rem;font-weight:800;color:#9CA3AF;text-transform:uppercase;">@total Lessons</span>
+                    </div>
+                }
+            </div>
+        </section>
+
+        @* ── Recent Achievements ── *@
+        <section>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;">
+                <h2 class="db-section-heading" style="margin-bottom:0;">Recent Achievements</h2>
+                <a href="/badges" style="color:#1565C0;font-weight:800;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;text-decoration:none;">View All</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="db-badge-card">
+                    <div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#FFD54F,#F57C00);box-shadow:0 0 24px rgba(255,213,79,0.6);display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:4px solid white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                    </div>
+                    <h4 style="font-weight:900;color:#0D47A1;font-size:1rem;margin-bottom:4px;">First Blood</h4>
+                    <span style="font-size:0.75rem;font-weight:800;color:#9CA3AF;">Earned 6 days ago</span>
+                </div>
+
+                <div class="db-badge-card">
+                    <div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#42A5F5,#1565C0);box-shadow:0 0 24px rgba(66,165,245,0.4);display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:4px solid white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <h4 style="font-weight:900;color:#0D47A1;font-size:1rem;margin-bottom:4px;">Speed Demon</h4>
+                    <span style="font-size:0.75rem;font-weight:800;color:#9CA3AF;">Earned 2 days ago</span>
+                </div>
+
+                <div class="db-badge-card" style="opacity:0.7;cursor:not-allowed;">
+                    <div style="width:88px;height:88px;border-radius:50%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:4px solid #D1D5DB;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/></svg>
+                    </div>
+                    <h4 style="font-weight:900;color:#9CA3AF;font-size:1rem;margin-bottom:4px;">Perfect Score</h4>
+                    <span style="font-size:0.75rem;font-weight:800;color:#9CA3AF;">Locked</span>
                 </div>
             </div>
+        </section>
 
-        </aside>
+        @* ── Quick Stats ── *@
+        <section>
+            <h2 class="db-section-heading">Quick Stats</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="db-stat-row">
+                    <div style="width:56px;height:56px;border-radius:16px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#43A047" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:2rem;font-weight:900;color:#0D47A1;line-height:1;">94%</div>
+                        <div style="font-size:0.8rem;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.08em;">Overall Accuracy</div>
+                    </div>
+                </div>
+
+                <div class="db-stat-row">
+                    <div style="width:56px;height:56px;border-radius:16px;background:#FFF3E0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F57C00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:2rem;font-weight:900;color:#0D47A1;line-height:1;">42 WPM</div>
+                        <div style="font-size:0.8rem;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.08em;">Average Speed</div>
+                    </div>
+                </div>
+
+                <div class="db-stat-row">
+                    <div style="width:56px;height:56px;border-radius:16px;background:#F3E5F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8E24AA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:2rem;font-weight:900;color:#0D47A1;line-height:1;">14h 20m</div>
+                        <div style="font-size:0.8rem;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.08em;">Total Practice Time</div>
+                    </div>
+                </div>
+
+                <div class="db-stat-row">
+                    <div style="width:56px;height:56px;border-radius:16px;background:#E3F2FD;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:2rem;font-weight:900;color:#0D47A1;line-height:1;">@_lessonsCompleted</div>
+                        <div style="font-size:0.8rem;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.08em;">Lessons Completed</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 </div>
 
 @code {
-    record SwitchState(bool Up, bool Down, bool Left, bool Right, bool Push = false, string YOffset = "");
-    record BadgeInfo(string GradientClass, string IconClass, string IconColor, string Label);
+    private int _totalStars;
+    private int _lessonsCompleted;
 
-    // Demo active switch states for "the" chord (t=R_Index:Down, h=R_ThumbInner:Right, e=L_Index:Down)
-    List<SwitchState> _leftFingers =
-    [
-        new(false, false, false, false, YOffset: "translate-y-4"),   // pinky
-        new(false, false, false, false, YOffset: "translate-y-1"),   // ring
-        new(false, true,  false, false, YOffset: "-translate-y-1"),  // middle — 'e' south active
-        new(false, false, true,  false, YOffset: "translate-y-2"),   // index  — space west active
-    ];
-    SwitchState _leftThumb = new(false, false, false, false);
-
-    List<SwitchState> _rightFingers =
-    [
-        new(true,  false, false, false, YOffset: "translate-y-2"),   // index  — 't' top active
-        new(false, false, false, false, YOffset: "-translate-y-1"),  // middle
-        new(false, false, false, false, YOffset: "translate-y-1"),   // ring
-        new(false, false, false, false, YOffset: "translate-y-4"),   // pinky
-    ];
-    SwitchState _rightThumb = new(false, false, false, true);       // 'h' right active
-
-    public record LessonCardModel(
-        int Number, string Title, string Status,
-        int Stars, int MaxStars, string? Score, bool IsNext, bool IsLocked);
-
-    List<LessonCardModel> _lessonCards =
-    [
-        new(11, "Intro to Digraphs",  "done",    3, 3, "100% Score",   false, false),
-        new(12, "Hand Alternation",   "partial", 2, 3, "85% Score",    false, false),
-        new(13, "The 'T' Cluster",    "done",    3, 3, "96% Score",    false, false),
-        new(14, "Common Digraphs",    "next",    0, 3, null,           true,  false),
-        new(15, "Word Endings",       "locked",  0, 3, "Requires Lvl 14", false, true),
-        new(16, "Prefixes",           "locked",  0, 3, "Locked",       false, true),
-        new(17, "Speed Drills I",     "locked",  0, 3, "Locked",       false, true),
-        new(18, "Module Test",        "locked",  0, 3, "Locked",       false, true),
-    ];
-
-    List<BadgeInfo> _badges =
-    [
-        new("bg-gradient-to-br from-yellow-300 to-amber-500",  "ph-fill ph-lightning",      "text-amber-500",  "Speed<br/>Demon"),
-        new("bg-gradient-to-br from-emerald-300 to-emerald-500","ph-fill ph-check-circle",  "text-emerald-500","Flawless<br/>Module"),
-        new("bg-gradient-to-br from-[#E0F7FA] to-[#00B4D8]",  "ph-fill ph-hands-clapping", "text-[#00B4D8]",  "Chord<br/>Master"),
-    ];
+    protected override async Task OnInitializedAsync()
+    {
+        _totalStars = await Progress.GetTotalStarsAsync();
+        // Approximate: count lessons where best stars >= 1
+        // TODO: replace with dedicated API call when available
+        _lessonsCompleted = 13;
+    }
 }

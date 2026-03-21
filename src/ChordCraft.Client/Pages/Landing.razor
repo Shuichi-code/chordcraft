@@ -17,14 +17,17 @@
                 <a href="/stats">Stats</a>
                 <a href="/badges">Badges</a>
             </nav>
-            @if (Auth.IsAuthenticated)
-            {
-                <a href="/lessons" class="btn btn-accent">Continue</a>
-            }
-            else
-            {
-                <a href="/register" class="btn btn-accent">Sign Up</a>
-            }
+            <div style="display:flex;align-items:center;gap:20px;">
+                @if (Auth.IsAuthenticated)
+                {
+                    <a href="/lessons" class="btn btn-accent">Continue</a>
+                }
+                else
+                {
+                    <a href="/login" style="font-weight:800;color:#64748B;text-decoration:none;font-size:1.05rem;">Login</a>
+                    <a href="/register" class="btn btn-accent">Sign Up</a>
+                }
+            </div>
         </div>
     </header>
 

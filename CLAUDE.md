@@ -62,15 +62,30 @@ docs/TDD.md                 # Full technical design document — authoritative r
 | JWT storage | In-memory (not LocalStorage) | XSS protection |
 | Progress service | Interface + 2 implementations | `LocalProgressService` for anon, `ApiProgressService` for authenticated; swapped on login |
 | Chord detection | 80ms character buffer + flush timer | CC1 firmware sends chord output as rapid sequential keystrokes |
-| Landing page layout | `LandingLayout` (no AppBar) | Landing page uses its own navbar — `@layout LandingLayout` bypasses `MainLayout`'s `MudAppBar` |
+| Landing/auth page layout | `LandingLayout` (no AppBar) | Landing, Dashboard, Login, Register use their own navbars — `@layout LandingLayout` bypasses `MainLayout`'s `MudAppBar` |
+
+## UI Design System
+
+All pages use a blue Duolingo-inspired theme:
+- **Primary:** `#1565C0` / `#0D47A1` (dark) / `#1976D2` (light)
+- **Accent:** `#FFD54F` (yellow) with `#F57F17` shadow — used for all primary CTAs as a 3D "press" button
+- **Background:** `#F0F4FF`
+- **Font:** `Nunito`, weight 700–900
+- **Cards:** white, `border-radius: 28px`, `border: 2px solid #F3F4F6`, `box-shadow: 0 4px 0 #E5E7EB`
+- Raw HTML + scoped `.razor.css` files (no MudBlazor components in redesigned pages)
+- MudBlazor heading bleed fix: add `border: none !important; outline: none !important; box-shadow: none !important; background: transparent !important` to h1–h4 in each page's `.razor.css`
 
 ## Client Layouts
 
-- `src/ChordCraft.Client/Layout/MainLayout.razor` — default layout with `MudAppBar` (all authenticated/app pages)
-- `src/ChordCraft.Client/Layout/LandingLayout.razor` — bare layout (MudBlazor providers only, no AppBar) used by `Landing.razor`
-- `src/ChordCraft.Client/Layouts/DashboardLayout.razor` — dashboard-specific layout
+- `src/ChordCraft.Client/Layout/MainLayout.razor` — default layout with `MudAppBar` (app pages not yet redesigned)
+- `src/ChordCraft.Client/Layout/LandingLayout.razor` — bare layout (MudBlazor providers only, no AppBar); used by Landing, Dashboard, Login, Register
+- `src/ChordCraft.Client/Layouts/DashboardLayout.razor` — legacy dashboard layout (superseded)
 
 Scoped CSS files (`.razor.css`) are used for component-level styles. Use `padding-left`/`padding-right` longhand (not `padding` shorthand) on elements that also carry the `.container` class, to avoid the container's padding override.
+
+## Client Models
+
+- `src/ChordCraft.Client/Models/LessonCardModel.cs` — `record` used by `LessonPlanCard` component (moved from nested type in old Dashboard)
 
 ## Domain Model
 

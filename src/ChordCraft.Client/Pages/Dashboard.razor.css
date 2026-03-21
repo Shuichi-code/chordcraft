@@ -1,0 +1,173 @@
+/* ── Accent Button ─────────────────────────────────────── */
+.db-btn-accent {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: #FFD54F;
+    color: #7A5800;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    border-radius: 14px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #F57F17;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    white-space: nowrap;
+}
+
+.db-btn-accent:hover {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #F57F17;
+}
+
+.db-btn-accent:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #F57F17;
+}
+
+/* ── Stat Card (streak / stars / badges) ──────────────── */
+.db-stat-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 2px solid #F3F4F6;
+    box-shadow: 0 4px 0 #E5E7EB;
+    transition: transform 0.15s ease;
+}
+
+.db-stat-card:hover {
+    transform: translateY(-2px);
+}
+
+/* ── Large Card (jump back in) ────────────────────────── */
+.db-card-lg {
+    background: #fff;
+    border-radius: 28px;
+    padding: 36px;
+    border: 2px solid #F3F4F6;
+    box-shadow: 0 6px 0 #E5E7EB;
+}
+
+/* ── Phase Progress Card ──────────────────────────────── */
+.db-phase-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    border: 2px solid #F3F4F6;
+    box-shadow: 0 4px 0 #E5E7EB;
+    transition: transform 0.15s ease;
+}
+
+.db-phase-card:hover {
+    transform: translateY(-2px);
+}
+
+/* ── SVG Ring ─────────────────────────────────────────── */
+.db-ring {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.6s ease;
+}
+
+.db-ring-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.db-ring-inner {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Badge Card ───────────────────────────────────────── */
+.db-badge-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 2px solid #F3F4F6;
+    box-shadow: 0 4px 0 #E5E7EB;
+    transition: transform 0.15s ease;
+}
+
+.db-badge-card:hover {
+    transform: translateY(-4px);
+}
+
+/* ── Quick Stat Row ───────────────────────────────────── */
+.db-stat-row {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 2px solid #F3F4F6;
+    box-shadow: 0 4px 0 #E5E7EB;
+}
+
+/* ── Headings — reset MudBlazor bleed ────────────────── */
+h1, h2, h3, h4 {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* ── Section Heading ──────────────────────────────────── */
+.db-section-heading {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #0D47A1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* ── Navbar Sign Up Button ────────────────────────────── */
+.btn-accent-nav {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background: #FFD54F;
+    color: #7A5800;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 0.9rem;
+    border-radius: 12px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #F57F17;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.btn-accent-nav:hover {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #F57F17;
+}

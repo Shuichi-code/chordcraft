@@ -1,5 +1,5 @@
 @page "/login"
-@using MudBlazor
+@layout LandingLayout
 @using System.Net.Http.Json
 @using System.Net.Http.Headers
 @using ChordCraft.Core.DTOs.Auth
@@ -7,34 +7,66 @@
 @inject AuthStateService Auth
 @inject NavigationManager Navigation
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
-    <MudCard>
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h5">Sign In</MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
-        <MudCardContent>
+<div class="login-page">
+
+    @* ── Navbar ── *@
+    <header class="login-nav">
+        <div class="login-nav-inner">
+            <a href="/" class="login-logo">
+                <div class="login-logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/></svg>
+                </div>
+                ChordCraft
+            </a>
+            <a href="/register" class="login-signup-btn">Sign Up</a>
+        </div>
+    </header>
+
+    @* ── Card ── *@
+    <main class="login-main">
+        <div class="login-card">
+
+            <div class="login-card-header">
+                <div class="login-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <h1>Welcome back</h1>
+                <p>Sign in to continue your journey</p>
+            </div>
+
             @if (!string.IsNullOrEmpty(_error))
             {
-                <MudAlert Severity="Severity.Error" Class="mb-3">@_error</MudAlert>
+                <div class="login-error">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    @_error
+                </div>
             }
-            <MudTextField @bind-Value="_email" Label="Email" InputType="InputType.Email"
-                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
-            <MudTextField @bind-Value="_password" Label="Password" InputType="InputType.Password"
-                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
-        </MudCardContent>
-        <MudCardActions Class="px-4 pb-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
-                       OnClick="LoginAsync" Disabled="_loading">
-                @(_loading ? "Signing in..." : "Sign In")
-            </MudButton>
-        </MudCardActions>
-    </MudCard>
-    <MudText Typo="Typo.body2" Class="text-center mt-3">
-        Don't have an account? <MudLink Href="/register">Create one</MudLink>
-    </MudText>
-</MudContainer>
+
+            <div class="login-form">
+                <div class="login-field">
+                    <label>Email</label>
+                    <input type="email" @bind="_email" @bind:event="oninput" placeholder="you@example.com" />
+                </div>
+                <div class="login-field">
+                    <label>Password</label>
+                    <input type="password" @bind="_password" @bind:event="oninput" placeholder="••••••••" />
+                </div>
+
+                <button class="login-btn" @onclick="LoginAsync" disabled="@_loading">
+                    @(_loading ? "Signing in…" : "Sign In")
+                </button>
+            </div>
+
+            <p class="login-footer-text">
+                Don't have an account? <a href="/register">Create one free</a>
+            </p>
+        </div>
+    </main>
+
+</div>
 
 @code {
     private string _email = "";
