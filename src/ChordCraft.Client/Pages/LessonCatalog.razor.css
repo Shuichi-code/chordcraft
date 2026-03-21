@@ -1,0 +1,248 @@
+/* ── Page ─────────────────────────────────────────────── */
+.catalog-page {
+    min-height: 100vh;
+    background-color: #F0F4FF;
+    font-family: 'Nunito', sans-serif;
+    color: #0D47A1;
+}
+
+/* ── Navbar ───────────────────────────────────────────── */
+.catalog-nav {
+    background: #fff;
+    border-bottom: 2px solid #E5E7EB;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.catalog-nav-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.catalog-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #1565C0;
+    text-decoration: none;
+    letter-spacing: -0.05em;
+}
+
+.catalog-logo-icon {
+    width: 36px;
+    height: 36px;
+    background: #1565C0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 0 #0D47A1;
+}
+
+.catalog-logo-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: #FFD54F;
+}
+
+.catalog-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.catalog-nav-link {
+    font-weight: 800;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9CA3AF;
+    text-decoration: none;
+    padding-bottom: 4px;
+    transition: color 0.15s;
+}
+
+.catalog-nav-link:hover { color: #1565C0; }
+
+.catalog-nav-link-active {
+    color: #1565C0;
+    border-bottom: 3px solid #1565C0;
+}
+
+.catalog-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.catalog-username {
+    font-weight: 800;
+    color: #0D47A1;
+    font-size: 0.95rem;
+}
+
+.catalog-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #42A5F5;
+    border: 2px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 900;
+    font-size: 1rem;
+}
+
+.catalog-signup-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background: #FFD54F;
+    color: #7A5800;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 3px 0 #F57F17;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.catalog-signup-btn:hover {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #F57F17;
+}
+
+/* ── Main ─────────────────────────────────────────────── */
+.catalog-main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 32px;
+    padding-bottom: 80px;
+}
+
+/* ── Progress banner ──────────────────────────────────── */
+.catalog-progress-banner {
+    background: #fff;
+    border-radius: 20px;
+    padding: 16px 24px;
+    margin-bottom: 40px;
+    border: 2px solid #E8EEFF;
+    box-shadow: 0 4px 0 #D1D9F0;
+}
+
+.catalog-progress-banner-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.catalog-progress-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #64748B;
+    white-space: nowrap;
+}
+
+.catalog-progress-stat svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.catalog-progress-stat strong {
+    color: #0D47A1;
+    font-weight: 900;
+}
+
+.catalog-progress-bar-wrap {
+    flex: 1;
+    height: 12px;
+    background: #F3F4F6;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.catalog-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #42A5F5, #1565C0);
+    border-radius: 999px;
+    transition: width 0.6s ease;
+    min-width: 4px;
+}
+
+/* ── Loading ──────────────────────────────────────────── */
+.catalog-loading {
+    display: flex;
+    justify-content: center;
+    padding: 80px 0;
+}
+
+.catalog-spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #E5E7EB;
+    border-top-color: #1565C0;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Phase section ────────────────────────────────────── */
+.catalog-phase {
+    margin-bottom: 48px;
+}
+
+.catalog-phase-header {
+    margin-bottom: 20px;
+}
+
+.catalog-phase-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #1565C0;
+    color: #fff;
+    font-weight: 900;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 6px 18px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+    box-shadow: 0 3px 0 #0D47A1;
+}
+
+.catalog-phase-desc {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #64748B;
+    margin: 0;
+}
+
+/* ── Lesson grid ──────────────────────────────────────── */
+.catalog-lesson-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}

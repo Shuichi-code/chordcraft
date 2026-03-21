@@ -1,52 +1,99 @@
 @page "/lessons"
-@using MudBlazor
+@layout LandingLayout
 @inject LessonDataService LessonData
 @inject IClientProgressService Progress
 @inject NavigationManager Navigation
+@inject AuthStateService Auth
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-    @* Progress summary *@
-    <MudPaper Class="pa-3 mb-4" Elevation="1">
-        <MudStack Row="true" Spacing="4" Justify="Justify.Center">
-            <MudText Typo="Typo.body2">
-                <strong>@completionPercent.ToString("0")%</strong> progress
-            </MudText>
-            <MudText Typo="Typo.body2">|</MudText>
-            <MudText Typo="Typo.body2">
-                <MudIcon Icon="@Icons.Material.Filled.Star" Size="Size.Small" Color="Color.Warning" />
-                <strong>@totalStars</strong> stars
-            </MudText>
-        </MudStack>
-    </MudPaper>
+<div class="catalog-page">
 
-    @if (phases is null)
-    {
-        <MudProgressCircular Indeterminate="true" Color="Color.Primary" Class="mx-auto d-block mt-8" />
-    }
-    else
-    {
-        @foreach (var phase in phases)
-        {
-            <MudText Typo="Typo.h5" Class="mt-6 mb-3" Style="font-weight: 600;">@phase.Name</MudText>
-            <MudText Typo="Typo.body2" Class="mb-3" Style="color: #666;">@phase.Description</MudText>
-
-            <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="2" Class="mb-4">
-                @foreach (var lesson in phase.Lessons)
+    @* ── Navbar ── *@
+    <nav class="catalog-nav">
+        <div class="catalog-nav-inner">
+            <div class="catalog-logo cursor-pointer" @onclick='() => Navigation.NavigateTo("/")'>
+                <div class="catalog-logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/></svg>
+                </div>
+                ChordCraft
+            </div>
+            <div class="catalog-nav-links">
+                <a href="/lessons" class="catalog-nav-link catalog-nav-link-active">Lessons</a>
+                <a href="/stats" class="catalog-nav-link">Stats</a>
+                <a href="/badges" class="catalog-nav-link">Badges</a>
+            </div>
+            <div class="catalog-nav-right">
+                @if (Auth.IsAuthenticated)
                 {
-                    var isUnlocked = IsLessonUnlocked(lesson);
-                    var isActive = isUnlocked && !HasCompleted(lesson.Id) && IsFirstUncompletedLesson(lesson);
-                    var bestStars = GetBestStars(lesson.Id);
-
-                    <LessonCard Lesson="lesson"
-                                IsUnlocked="isUnlocked"
-                                IsActive="isActive"
-                                BestStars="bestStars"
-                                OnClick="@(() => OpenLesson(lesson, isUnlocked))" />
+                    <span class="catalog-username">@Auth.DisplayName</span>
+                    <div class="catalog-avatar">
+                        @(Auth.DisplayName?.Length > 0 ? Auth.DisplayName[0].ToString().ToUpper() : "?")
+                    </div>
                 }
-            </MudStack>
+                else
+                {
+                    <a href="/login" class="catalog-nav-link">Login</a>
+                    <a href="/register" class="catalog-signup-btn">Sign Up</a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <main class="catalog-main">
+
+        @* ── Progress banner ── *@
+        <div class="catalog-progress-banner">
+            <div class="catalog-progress-banner-inner">
+                <div class="catalog-progress-stat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#42A5F5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    <span><strong>@completionPercent.ToString("0")%</strong> complete</span>
+                </div>
+                <div class="catalog-progress-bar-wrap">
+                    <div class="catalog-progress-bar" style="width: @(completionPercent.ToString("0"))%;"></div>
+                </div>
+                <div class="catalog-progress-stat">
+                    <svg viewBox="0 0 24 24" fill="#FFD54F" stroke="#F57F17" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span><strong>@totalStars</strong> stars</span>
+                </div>
+            </div>
+        </div>
+
+        @* ── Phases ── *@
+        @if (phases is null)
+        {
+            <div class="catalog-loading">
+                <div class="catalog-spinner"></div>
+            </div>
         }
-    }
-</MudContainer>
+        else
+        {
+            @foreach (var phase in phases)
+            {
+                <section class="catalog-phase">
+                    <div class="catalog-phase-header">
+                        <div class="catalog-phase-badge">@phase.Name</div>
+                        <p class="catalog-phase-desc">@phase.Description</p>
+                    </div>
+                    <div class="catalog-lesson-grid">
+                        @foreach (var lesson in phase.Lessons)
+                        {
+                            var isUnlocked = IsLessonUnlocked(lesson);
+                            var isActive   = isUnlocked && !HasCompleted(lesson.Id) && IsFirstUncompletedLesson(lesson);
+                            var bestStars  = GetBestStars(lesson.Id);
+                            var isDone     = bestStars >= 1;
+
+                            <LessonCard Lesson="lesson"
+                                        IsUnlocked="isUnlocked"
+                                        IsActive="isActive"
+                                        BestStars="bestStars"
+                                        OnClick="@(() => OpenLesson(lesson, isUnlocked))" />
+                        }
+                    </div>
+                </section>
+            }
+        }
+
+    </main>
+</div>
 
 @code {
     private List<PhaseDto>? phases;
@@ -54,7 +101,6 @@
     private decimal completionPercent;
     private int? firstUncompletedLessonId;
 
-    // Per-lesson state precomputed in OnInitializedAsync
     private Dictionary<int, int> bestStarsMap = new();
     private HashSet<int> completedLessons = new();
     private HashSet<int> unlockedLessons = new();
@@ -71,7 +117,6 @@
         {
             var allLessons = phases.SelectMany(p => p.Lessons).OrderBy(l => l.Number).ToList();
 
-            // Precompute best stars and completion for all lessons
             foreach (var lesson in allLessons)
             {
                 var stars = await Progress.GetBestStarsAsync(lesson.Id);
@@ -80,7 +125,6 @@
                     completedLessons.Add(lesson.Id);
             }
 
-            // Precompute unlocked lessons
             foreach (var lesson in allLessons)
             {
                 if (lesson.Number <= 1)
@@ -93,7 +137,6 @@
                     unlockedLessons.Add(lesson.Id);
             }
 
-            // Find first uncompleted lesson
             foreach (var lesson in allLessons)
             {
                 if (unlockedLessons.Contains(lesson.Id) && !completedLessons.Contains(lesson.Id))
@@ -106,14 +149,9 @@
     }
 
     private bool IsLessonUnlocked(LessonSummaryDto lesson) => unlockedLessons.Contains(lesson.Id);
-
     private bool HasCompleted(int lessonId) => completedLessons.Contains(lessonId);
-
-    private bool IsFirstUncompletedLesson(LessonSummaryDto lesson)
-        => firstUncompletedLessonId == lesson.Id;
-
-    private int GetBestStars(int lessonId)
-        => bestStarsMap.TryGetValue(lessonId, out var s) ? s : 0;
+    private bool IsFirstUncompletedLesson(LessonSummaryDto lesson) => firstUncompletedLessonId == lesson.Id;
+    private int GetBestStars(int lessonId) => bestStarsMap.TryGetValue(lessonId, out var s) ? s : 0;
 
     private void OpenLesson(LessonSummaryDto lesson, bool isUnlocked)
     {

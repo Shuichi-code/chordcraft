@@ -1,15 +1,130 @@
-.lesson-card {
-    transition: transform 0.2s, box-shadow 0.2s;
-    width: 140px;
-    min-height: 130px;
+/* ── Node wrapper ─────────────────────────────────────── */
+.lc-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 88px;
+    cursor: pointer;
+    position: relative;
 }
-.lesson-card:hover {
-    transform: translateY(-2px);
+
+/* ── Circle ───────────────────────────────────────────── */
+.lc-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
-.lesson-card.active {
-    animation: pulse 2s infinite;
+
+.lc-circle svg {
+    width: 28px;
+    height: 28px;
 }
-@keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.4); }
-    50% { box-shadow: 0 0 0 8px rgba(25, 118, 210, 0); }
+
+.lc-number {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* ── Locked ───────────────────────────────────────────── */
+.lc-locked .lc-circle {
+    background: #E5E7EB;
+    box-shadow: 0 4px 0 #D1D5DB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+}
+
+.lc-locked .lc-label { color: #9CA3AF; }
+
+/* ── Unlocked (not started) ───────────────────────────── */
+.lc-unlocked .lc-circle {
+    background: #fff;
+    border: 3px solid #E5E7EB;
+    box-shadow: 0 4px 0 #D1D9F0;
+    color: #1565C0;
+}
+
+.lc-unlocked:hover .lc-circle {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 0 #D1D9F0;
+}
+
+/* ── Active / next lesson ─────────────────────────────── */
+.lc-active .lc-circle {
+    background: #FFD54F;
+    box-shadow: 0 5px 0 #F57F17, 0 0 0 6px rgba(255,213,79,0.25);
+    color: #7A5800;
+}
+
+.lc-active:hover .lc-circle {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 0 #F57F17, 0 0 0 6px rgba(255,213,79,0.25);
+}
+
+/* ── Completed ────────────────────────────────────────── */
+.lc-done .lc-circle {
+    background: #1976D2;
+    box-shadow: 0 4px 0 #0D47A1;
+    color: #fff;
+}
+
+.lc-done:hover .lc-circle {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 0 #0D47A1;
+}
+
+/* ── Label ────────────────────────────────────────────── */
+.lc-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-align: center;
+    color: #64748B;
+    line-height: 1.2;
+    max-width: 80px;
+    word-break: break-word;
+}
+
+/* ── Stars ────────────────────────────────────────────── */
+.lc-stars {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+}
+
+.lc-star-filled, .lc-star-empty {
+    width: 14px;
+    height: 14px;
+}
+
+.lc-star-filled {
+    fill: #FFD54F;
+    stroke: #F57F17;
+    stroke-width: 1.5;
+}
+
+.lc-star-empty {
+    fill: #E5E7EB;
+    stroke: #D1D5DB;
+    stroke-width: 1.5;
+}
+
+/* ── Start label ──────────────────────────────────────── */
+.lc-start-label {
+    background: #1565C0;
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 0 #0D47A1;
 }

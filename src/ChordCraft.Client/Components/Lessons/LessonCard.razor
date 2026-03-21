@@ -1,29 +1,44 @@
-@using MudBlazor
-
-<MudCard Class="@CardClass" Elevation="@(IsUnlocked ? 2 : 0)" Style="@CardStyle"
-         @onclick="OnClick">
-    <MudCardContent Class="pa-3 text-center">
-        <MudText Typo="Typo.h6" Style="font-weight: 700;">@Lesson.Number</MudText>
-
+<div class="lc-node @NodeClass" @onclick="OnClick" title="@Lesson.Title">
+    <div class="lc-circle">
         @if (!IsUnlocked)
         {
-            <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Medium" Color="Color.Default" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+        }
+        else if (BestStars >= 1)
+        {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
         }
         else
         {
-            <MudIcon Icon="@TypeIcon" Size="Size.Medium" Color="Color.Primary" />
+            <span class="lc-number">@Lesson.Number</span>
         }
+    </div>
 
-        <MudText Typo="Typo.caption" Class="mt-1" Style="@(IsUnlocked ? "" : "opacity: 0.5;")">
-            @Lesson.Title
-        </MudText>
+    <div class="lc-label">@Lesson.Title</div>
 
-        @if (BestStars > 0)
-        {
-            <StarDisplay Stars="BestStars" Size="Size.Small" />
-        }
-    </MudCardContent>
-</MudCard>
+    @if (BestStars > 0)
+    {
+        <div class="lc-stars">
+            @for (int i = 1; i <= 3; i++)
+            {
+                var filled = i <= BestStars;
+                <svg viewBox="0 0 24 24" class="@(filled ? "lc-star-filled" : "lc-star-empty")">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+            }
+        </div>
+    }
+
+    @if (IsActive)
+    {
+        <div class="lc-start-label">START!</div>
+    }
+</div>
 
 @code {
     [Parameter, EditorRequired] public LessonSummaryDto Lesson { get; set; } = null!;
@@ -32,16 +47,14 @@
     [Parameter] public int BestStars { get; set; }
     [Parameter] public EventCallback OnClick { get; set; }
 
-    private string CardClass => IsActive ? "lesson-card active" : "lesson-card";
-    private string CardStyle => IsUnlocked
-        ? (IsActive ? "border: 2px solid #1976d2; cursor: pointer;" : "cursor: pointer;")
-        : "opacity: 0.6; cursor: default;";
-
-    private string TypeIcon => Lesson.Type switch
+    private string NodeClass
     {
-        LessonType.Intro => Icons.Material.Filled.NewReleases,
-        LessonType.Review => Icons.Material.Filled.Search,
-        LessonType.Practice => Icons.Material.Filled.Timer,
-        _ => Icons.Material.Filled.School
-    };
+        get
+        {
+            if (!IsUnlocked) return "lc-locked";
+            if (IsActive) return "lc-active";
+            if (BestStars >= 1) return "lc-done";
+            return "lc-unlocked";
+        }
+    }
 }
