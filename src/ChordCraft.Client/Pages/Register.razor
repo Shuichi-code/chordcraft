@@ -1,5 +1,5 @@
 @page "/register"
-@using MudBlazor
+@layout LandingLayout
 @using System.Net.Http.Json
 @using ChordCraft.Core.DTOs.Auth
 @inject HttpClient Http
@@ -8,41 +8,75 @@
 @inject LocalStorageService Storage
 @inject NavigationManager Navigation
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
-    <MudCard>
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h5">Create Account</MudText>
-                <MudText Typo="Typo.body2" Class="mt-1">
-                    Save your progress and sync across devices.
-                </MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
-        <MudCardContent>
+<div class="reg-page">
+
+    @* ── Navbar ── *@
+    <header class="reg-nav">
+        <div class="reg-nav-inner">
+            <a href="/" class="reg-logo">
+                <div class="reg-logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/></svg>
+                </div>
+                ChordCraft
+            </a>
+            <a href="/login" class="reg-login-link">Already have an account? <strong>Log in</strong></a>
+        </div>
+    </header>
+
+    @* ── Card ── *@
+    <main class="reg-main">
+        <div class="reg-card">
+
+            <div class="reg-card-header">
+                <div class="reg-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/>
+                    </svg>
+                </div>
+                <h1>Start for free</h1>
+                <p>Save your progress and sync across devices</p>
+            </div>
+
             @if (!string.IsNullOrEmpty(_error))
             {
-                <MudAlert Severity="Severity.Error" Class="mb-3">@_error</MudAlert>
+                <div class="reg-error">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    @_error
+                </div>
             }
-            <MudTextField @bind-Value="_email" Label="Email" InputType="InputType.Email"
-                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
-            <MudTextField @bind-Value="_displayName" Label="Display Name"
-                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
-            <MudTextField @bind-Value="_password" Label="Password" InputType="InputType.Password"
-                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
-            <MudTextField @bind-Value="_confirmPassword" Label="Confirm Password" InputType="InputType.Password"
-                          Variant="Variant.Outlined" Class="mb-3" FullWidth="true" />
-        </MudCardContent>
-        <MudCardActions Class="px-4 pb-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
-                       OnClick="RegisterAsync" Disabled="_loading">
-                @(_loading ? "Creating account..." : "Create Account")
-            </MudButton>
-        </MudCardActions>
-    </MudCard>
-    <MudText Typo="Typo.body2" Class="text-center mt-3">
-        Already have an account? <MudLink Href="/login">Sign in</MudLink>
-    </MudText>
-</MudContainer>
+
+            <div class="reg-form">
+                <div class="reg-field">
+                    <label>Email</label>
+                    <input type="email" @bind="_email" @bind:event="oninput" placeholder="you@example.com" />
+                </div>
+                <div class="reg-field">
+                    <label>Display Name</label>
+                    <input type="text" @bind="_displayName" @bind:event="oninput" placeholder="ChordMaster42" />
+                </div>
+                <div class="reg-row">
+                    <div class="reg-field">
+                        <label>Password</label>
+                        <input type="password" @bind="_password" @bind:event="oninput" placeholder="••••••••" />
+                    </div>
+                    <div class="reg-field">
+                        <label>Confirm Password</label>
+                        <input type="password" @bind="_confirmPassword" @bind:event="oninput" placeholder="••••••••" />
+                    </div>
+                </div>
+
+                <button class="reg-btn" @onclick="RegisterAsync" disabled="@_loading">
+                    @(_loading ? "Creating account…" : "Create Free Account")
+                </button>
+            </div>
+
+            <p class="reg-footer-text">
+                By signing up you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+            </p>
+        </div>
+    </main>
+
+</div>
 
 @code {
     private string _email = "";
@@ -59,7 +93,6 @@
         _loading = true;
         try
         {
-            // 1. Register — RegisterRequest(Email, Password, DisplayName)
             var regResp = await Http.PostAsJsonAsync("api/auth/register",
                 new RegisterRequest(_email, _password, _displayName));
             if (!regResp.IsSuccessStatusCode)
@@ -69,12 +102,10 @@
             }
             var auth = await regResp.Content.ReadFromJsonAsync<AuthResponse>();
 
-            // 2. Set token
             await Auth.SetTokenAsync(auth!);
             Http.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth!.AccessToken);
 
-            // 3. Migrate LocalStorage progress
             var localData = await LocalProgress.LoadAsync();
             var progressEntries = localData.Progress.Select(kv =>
                 new MigrateProgressEntry(kv.Key, kv.Value.BestStars, kv.Value.BestAccuracy,
@@ -86,9 +117,7 @@
                         progressEntries,
                         new List<MigrateLessonAttemptEntry>()));
 
-            // 4. Clear LocalStorage progress
             await Storage.RemoveAsync("chordcraft_progress");
-
             Navigation.NavigateTo("/lessons");
         }
         catch
