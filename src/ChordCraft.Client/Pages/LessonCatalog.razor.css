@@ -126,6 +126,22 @@
     box-shadow: 0 1px 0 #F57F17;
 }
 
+.catalog-logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #9CA3AF;
+    padding: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.15s;
+}
+
+.catalog-logout-btn:hover { color: #DC2626; }
+
 /* ── Main ─────────────────────────────────────────────── */
 .catalog-main {
     max-width: 960px;

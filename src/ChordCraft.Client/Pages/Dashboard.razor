@@ -30,9 +30,10 @@
                 @if (Auth.IsAuthenticated)
                 {
                     <span style="font-weight:800;color:#0D47A1;font-size:0.95rem;">@Auth.DisplayName</span>
-                    <div style="width:40px;height:40px;border-radius:50%;background:#42A5F5;border:2px solid #E5E7EB;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;cursor:pointer;">
+                    <div style="width:40px;height:40px;border-radius:50%;background:#42A5F5;border:2px solid #E5E7EB;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;">
                         @(Auth.DisplayName?.Length > 0 ? Auth.DisplayName[0].ToString().ToUpper() : "?")
                     </div>
+                    <button @onclick="LogoutAsync" style="background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.85rem;color:#9CA3AF;padding:0;text-transform:uppercase;letter-spacing:0.05em;">Log out</button>
                 }
                 else
                 {
@@ -273,5 +274,11 @@
         // Approximate: count lessons where best stars >= 1
         // TODO: replace with dedicated API call when available
         _lessonsCompleted = 13;
+    }
+
+    private async Task LogoutAsync()
+    {
+        await Auth.ClearAsync();
+        Navigation.NavigateTo("/");
     }
 }
