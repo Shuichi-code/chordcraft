@@ -1,5 +1,5 @@
 @page "/lessons/{LessonId:int}"
-@using MudBlazor
+@layout LandingLayout
 @using ChordCraft.Core.Scoring
 @implements IAsyncDisposable
 @inject LessonDataService LessonData
@@ -7,67 +7,108 @@
 @inject AudioService Audio
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject AuthStateService Auth
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-2">
-    @* Top bar *@
-    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="GoBack" />
-        <MudText Typo="Typo.h6">@lesson?.Title</MudText>
-        <MudStack Row="true" Spacing="1">
-            <MudIconButton Icon="@(soundEnabled ? Icons.Material.Filled.VolumeUp : Icons.Material.Filled.VolumeOff)"
-                           OnClick="ToggleSound" />
-        </MudStack>
-    </MudStack>
+<div class="ti-page">
 
-    @if (lesson is null)
-    {
-        <MudProgressCircular Indeterminate="true" Color="Color.Primary" Class="mx-auto d-block mt-8" />
-    }
-    else if (showResults)
-    {
-        <LessonResults Stars="resultStars" Accuracy="resultAccuracy" Speed="resultSpeed" Points="resultPoints"
-                       OnRetry="Retry" OnNextLesson="NextLesson" />
-    }
-    else
-    {
-        @switch (lesson.Type)
+    @* ── Navbar ── *@
+    <nav class="ti-nav">
+        <div class="ti-nav-inner">
+            <div class="ti-logo" @onclick='() => Navigation.NavigateTo("/")'>
+                <div class="ti-logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/></svg>
+                </div>
+                ChordCraft
+            </div>
+            <div class="ti-nav-links">
+                <a href="/lessons" class="ti-nav-link ti-nav-link-active">Lessons</a>
+                <a href="/stats" class="ti-nav-link">Stats</a>
+                <a href="/badges" class="ti-nav-link">Badges</a>
+            </div>
+            <div class="ti-nav-right">
+                @if (Auth.IsAuthenticated)
+                {
+                    <span class="ti-username">@Auth.DisplayName</span>
+                    <div class="ti-avatar">
+                        @(Auth.DisplayName?.Length > 0 ? Auth.DisplayName[0].ToString().ToUpper() : "?")
+                    </div>
+                    <button @onclick="LogoutAsync" class="ti-logout-btn">Log out</button>
+                }
+                else
+                {
+                    <a href="/login" class="ti-nav-link">Login</a>
+                    <a href="/register" class="ti-signup-btn">Sign Up</a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    @* ── Top bar ── *@
+    <div class="ti-topbar">
+        <button class="ti-icon-btn" @onclick="GoBack" title="Back to lessons">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="ti-lesson-title">@lesson?.Title</span>
+        <button class="ti-icon-btn" @onclick="ToggleSound" title="Toggle sound">
+            @if (soundEnabled)
+            {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            }
+            else
+            {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            }
+        </button>
+    </div>
+
+    @* ── Content ── *@
+    <main class="ti-main">
+        @if (lesson is null)
         {
-            case LessonType.Intro:
-                <IntroLesson @ref="introRef" Content="@lesson.Content" OnComplete="OnLessonComplete" />
-                break;
-            case LessonType.Review:
-                <ReviewLesson @ref="reviewRef" Content="@lesson.Content" OnComplete="OnLessonComplete" />
-                break;
-            case LessonType.Practice:
-                <PracticeLesson @ref="practiceRef" Content="@lesson.Content" SpeedGoal="@lesson.SpeedGoal"
-                                OnComplete="OnLessonComplete" />
-                break;
-            case LessonType.Play:
-                <PracticeLesson @ref="practiceRef" Content="@lesson.Content" SpeedGoal="@lesson.SpeedGoal"
-                                OnComplete="OnLessonComplete" />
-                break;
-            case LessonType.Video:
-                <MudPaper Class="pa-6 text-center" Elevation="1">
-                    <MudIcon Icon="@Icons.Material.Filled.PlayCircle" Size="Size.Large" Color="Color.Primary" Class="mb-3" />
-                    <MudText Typo="Typo.h6" Class="mb-2">@lesson.Title</MudText>
-                    <MudText Typo="Typo.body1" Class="mb-6" Style="color: #666;">@lesson.Description</MudText>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
-                               OnClick="CompleteVideoLesson">Continue</MudButton>
-                </MudPaper>
-                break;
+            <div class="ti-loading">
+                <div class="ti-spinner"></div>
+            </div>
         }
-    }
+        else if (showResults)
+        {
+            <LessonResults Stars="resultStars" Accuracy="resultAccuracy" Speed="resultSpeed" Points="resultPoints"
+                           OnRetry="Retry" OnNextLesson="NextLesson" />
+        }
+        else
+        {
+            @switch (lesson.Type)
+            {
+                case LessonType.Intro:
+                    <IntroLesson @ref="introRef" Content="@lesson.Content" OnComplete="OnLessonComplete" />
+                    break;
+                case LessonType.Review:
+                    <ReviewLesson @ref="reviewRef" Content="@lesson.Content" OnComplete="OnLessonComplete" />
+                    break;
+                case LessonType.Practice:
+                case LessonType.Play:
+                    <PracticeLesson @ref="practiceRef" Content="@lesson.Content" SpeedGoal="@lesson.SpeedGoal"
+                                    OnComplete="OnLessonComplete" />
+                    break;
+                case LessonType.Video:
+                    <div class="ti-video-card">
+                        <div class="ti-video-icon">
+                            <svg viewBox="0 0 24 24" fill="#1565C0" width="40" height="40"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <h2>@lesson.Title</h2>
+                        <p>@lesson.Description</p>
+                        <button class="ti-btn-accent" @onclick="CompleteVideoLesson">Continue</button>
+                    </div>
+                    break;
+            }
+        }
+    </main>
 
-    @* Bottom nav *@
-    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mt-6 mb-4">
-        <MudButton Variant="Variant.Outlined" OnClick="PrevLesson" Disabled="@(LessonId <= 1)">
-            Previous
-        </MudButton>
-        <MudButton Variant="Variant.Outlined" OnClick="SkipLesson">
-            Skip
-        </MudButton>
-    </MudStack>
-</MudContainer>
+    @* ── Bottom nav ── *@
+    <div class="ti-bottombar">
+        <button class="ti-btn-outline" @onclick="PrevLesson" disabled="@(LessonId <= 1)">← Previous</button>
+        <button class="ti-btn-outline" @onclick="SkipLesson">Skip →</button>
+    </div>
+</div>
 
 @code {
     [Parameter] public int LessonId { get; set; }
@@ -127,7 +168,6 @@
     {
         if (showResults || lesson is null) return;
 
-        // Forward to active lesson component
         switch (lesson.Type)
         {
             case LessonType.Intro:
@@ -175,10 +215,7 @@
         StateHasChanged();
     }
 
-    private void NextLesson()
-    {
-        Navigation.NavigateTo($"/lessons/{LessonId + 1}");
-    }
+    private void NextLesson() => Navigation.NavigateTo($"/lessons/{LessonId + 1}");
 
     private void PrevLesson()
     {
@@ -193,6 +230,12 @@
     private async Task ToggleSound()
     {
         soundEnabled = await Audio.ToggleAsync();
+    }
+
+    private async Task LogoutAsync()
+    {
+        await Auth.ClearAsync();
+        Navigation.NavigateTo("/");
     }
 
     public async ValueTask DisposeAsync()

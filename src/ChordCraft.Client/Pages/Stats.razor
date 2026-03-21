@@ -1,121 +1,154 @@
 @page "/stats"
-@using MudBlazor
+@layout LandingLayout
 @using System.Net.Http.Json
 @using System.Net.Http.Headers
 @using ChordCraft.Core.DTOs.Progress
 @using ChordCraft.Client.Components.Stats
 @inject HttpClient Http
 @inject AuthStateService Auth
+@inject NavigationManager Navigation
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-    <MudText Typo="Typo.h4" Class="mb-4">Your Stats</MudText>
+<div class="st-page">
 
-    @if (!Auth.IsAuthenticated)
-    {
-        <MudAlert Severity="Severity.Info" Class="mb-4">
-            <MudText>Sign up or log in to track your progress across devices.</MudText>
-            <MudStack Row="true" Spacing="2" Class="mt-2">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/register">Sign Up Free</MudButton>
-                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/login">Log In</MudButton>
-            </MudStack>
-        </MudAlert>
-        <MudPaper Class="pa-8 text-center" Elevation="1" Style="opacity: 0.5;">
-            <MudIcon Icon="@Icons.Material.Filled.BarChart" Size="Size.Large" Color="Color.Primary" />
-            <MudText Typo="Typo.h6" Class="mt-2">Stats locked</MudText>
-            <MudText Typo="Typo.body2">Create an account to see your progress charts and heatmap.</MudText>
-        </MudPaper>
-    }
-    else if (_loading)
-    {
-        <MudProgressCircular Indeterminate="true" Color="Color.Primary" Class="mx-auto d-block mt-8" />
-    }
-    else if (_stats is not null)
-    {
-        @* Summary cards *@
-        <MudGrid Class="mb-6">
-            <MudItem xs="6" sm="3">
-                <MudPaper Class="pa-4 text-center" Elevation="1">
-                    <MudText Typo="Typo.h4" Color="Color.Primary">@(_stats.OverallAccuracy.ToString("0.0"))%</MudText>
-                    <MudText Typo="Typo.body2">Accuracy</MudText>
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="6" sm="3">
-                <MudPaper Class="pa-4 text-center" Elevation="1">
-                    <MudText Typo="Typo.h4" Color="Color.Primary">@(_stats.Coverage.ToString("P0"))</MudText>
-                    <MudText Typo="Typo.body2">Coverage</MudText>
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="6" sm="3">
-                <MudPaper Class="pa-4 text-center" Elevation="1">
-                    <MudText Typo="Typo.h4" Color="Color.Primary">@(_stats.AverageSpeed.ToString("0.0"))</MudText>
-                    <MudText Typo="Typo.body2">Avg WPM</MudText>
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="6" sm="3">
-                <MudPaper Class="pa-4 text-center" Elevation="1">
-                    <MudText Typo="Typo.h4" Color="Color.Primary">@FormatTime(_stats.TotalPracticeTime)</MudText>
-                    <MudText Typo="Typo.body2">Practice Time</MudText>
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
+    @* ── Navbar ── *@
+    <nav class="st-nav">
+        <div class="st-nav-inner">
+            <div class="st-logo" @onclick='() => Navigation.NavigateTo("/")'>
+                <div class="st-logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/></svg>
+                </div>
+                ChordCraft
+            </div>
+            <div class="st-nav-links">
+                <a href="/lessons" class="st-nav-link">Lessons</a>
+                <a href="/stats" class="st-nav-link st-nav-link-active">Stats</a>
+                <a href="/badges" class="st-nav-link">Badges</a>
+            </div>
+            <div class="st-nav-right">
+                @if (Auth.IsAuthenticated)
+                {
+                    <span class="st-username">@Auth.DisplayName</span>
+                    <div class="st-avatar">@(Auth.DisplayName?.Length > 0 ? Auth.DisplayName[0].ToString().ToUpper() : "?")</div>
+                    <button @onclick="LogoutAsync" class="st-logout-btn">Log out</button>
+                }
+                else
+                {
+                    <a href="/login" class="st-nav-link">Login</a>
+                    <a href="/register" class="st-signup-btn">Sign Up</a>
+                }
+            </div>
+        </div>
+    </nav>
 
-        @* Progress chart *@
-        <MudPaper Class="pa-4 mb-6" Elevation="1">
-            <MudText Typo="Typo.h6" Class="mb-3">Progress Over Time</MudText>
-            @if (_stats.DailyStats.Count == 0)
-            {
-                <MudText Typo="Typo.body2" Style="color: #999;">No activity yet — complete some lessons!</MudText>
-            }
-            else
-            {
-                <MudChart ChartType="ChartType.Line"
-                          ChartSeries="_chartSeries"
-                          XAxisLabels="_chartLabels"
-                          Width="100%" Height="250px"
-                          ChartOptions="_chartOptions" />
-                <MudSimpleTable Dense="true" Class="mt-4">
-                    <thead>
-                        <tr><th>Date</th><th>Accuracy</th><th>Avg Speed</th><th>Practice Time</th></tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var day in _stats.DailyStats.OrderByDescending(d => d.Date))
-                        {
-                            <tr>
-                                <td>@day.Date.ToString("MMM dd")</td>
-                                <td>@(day.Accuracy.ToString("0.0"))%</td>
-                                <td>@(day.Speed.ToString("0.0")) WPM</td>
-                                <td>@FormatTime(day.PracticeTime)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </MudSimpleTable>
-            }
-        </MudPaper>
+    <main class="st-main">
+        <h1 class="st-page-title">Your Stats</h1>
 
-        @* Switch heatmap *@
-        <MudPaper Class="pa-4" Elevation="1">
-            <MudText Typo="Typo.h6" Class="mb-1">Switch Accuracy Heatmap</MudText>
-            <MudText Typo="Typo.body2" Class="mb-3" Style="color: #666;">
-                Color shows accuracy per switch. Complete more lessons to populate this.
-            </MudText>
-            @if (_stats.SwitchAccuracies.Count == 0)
-            {
-                <MudText Typo="Typo.body2" Style="color: #999;">No switch data yet.</MudText>
-            }
-            else
-            {
-                <SwitchHeatmap SwitchAccuracies="_stats.SwitchAccuracies" />
-            }
-        </MudPaper>
-    }
-</MudContainer>
+        @if (!Auth.IsAuthenticated)
+        {
+            <div class="st-auth-banner">
+                <p>Sign up or log in to track your progress across devices.</p>
+                <div class="st-auth-actions">
+                    <a href="/register" class="st-btn-accent">Sign Up Free</a>
+                    <a href="/login" class="st-btn-outline">Log In</a>
+                </div>
+            </div>
+            <div class="st-locked-preview">
+                <div class="st-lock-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" width="48" height="48"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <h3>Stats locked</h3>
+                <p>Create an account to see your progress charts and heatmap.</p>
+            </div>
+        }
+        else if (_loading)
+        {
+            <div class="st-loading"><div class="st-spinner"></div></div>
+        }
+        else if (_stats is not null)
+        {
+            @* ── Summary cards ── *@
+            <div class="st-summary-grid">
+                <div class="st-stat-card">
+                    <div class="st-stat-value">@(_stats.OverallAccuracy.ToString("0.0"))%</div>
+                    <div class="st-stat-label">Accuracy</div>
+                </div>
+                <div class="st-stat-card">
+                    <div class="st-stat-value">@(_stats.Coverage.ToString("P0"))</div>
+                    <div class="st-stat-label">Coverage</div>
+                </div>
+                <div class="st-stat-card">
+                    <div class="st-stat-value">@(_stats.AverageSpeed.ToString("0.0"))</div>
+                    <div class="st-stat-label">Avg WPM</div>
+                </div>
+                <div class="st-stat-card">
+                    <div class="st-stat-value">@FormatTime(_stats.TotalPracticeTime)</div>
+                    <div class="st-stat-label">Practice Time</div>
+                </div>
+            </div>
+
+            @* ── Progress chart ── *@
+            <div class="st-card st-chart-card">
+                <h2 class="st-section-title">Progress Over Time</h2>
+                @if (_stats.DailyStats.Count == 0)
+                {
+                    <p class="st-empty">No activity yet — complete some lessons!</p>
+                }
+                else
+                {
+                    <div class="st-chart-wrap">
+                        <svg class="st-chart-svg" viewBox="0 0 600 200" preserveAspectRatio="none">
+                            <line x1="20" y1="0" x2="20" y2="180" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="20" y1="180" x2="580" y2="180" stroke="#E5E7EB" stroke-width="1"/>
+                            <polyline points="@GetAccuracyPoints()" fill="none" stroke="#1565C0" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+                            <polyline points="@GetSpeedPoints()" fill="none" stroke="#FFD54F" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 3"/>
+                        </svg>
+                        <div class="st-chart-legend">
+                            <span class="st-legend-acc">— Accuracy %</span>
+                            <span class="st-legend-spd">-- Speed (WPM)</span>
+                        </div>
+                    </div>
+
+                    <div class="st-table-wrap">
+                        <table class="st-table">
+                            <thead>
+                                <tr><th>Date</th><th>Accuracy</th><th>Avg Speed</th><th>Practice Time</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var day in _stats.DailyStats.OrderByDescending(d => d.Date))
+                                {
+                                    <tr>
+                                        <td>@day.Date.ToString("MMM dd")</td>
+                                        <td>@(day.Accuracy.ToString("0.0"))%</td>
+                                        <td>@(day.Speed.ToString("0.0")) WPM</td>
+                                        <td>@FormatTime(day.PracticeTime)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+
+            @* ── Switch heatmap ── *@
+            <div class="st-card">
+                <h2 class="st-section-title">Switch Accuracy Heatmap</h2>
+                <p class="st-hint">Color shows accuracy per switch. Complete more lessons to populate this.</p>
+                @if (_stats.SwitchAccuracies.Count == 0)
+                {
+                    <p class="st-empty">No switch data yet.</p>
+                }
+                else
+                {
+                    <SwitchHeatmap SwitchAccuracies="_stats.SwitchAccuracies" />
+                }
+            </div>
+        }
+    </main>
+</div>
 
 @code {
     private StatsDto? _stats;
     private bool _loading = true;
-    private List<ChartSeries> _chartSeries = [];
-    private string[] _chartLabels = [];
-    private readonly ChartOptions _chartOptions = new() { YAxisTicks = 20, MaxNumYAxisTicks = 6 };
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,18 +158,34 @@
             Http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", Auth.Token);
             _stats = await Http.GetFromJsonAsync<StatsDto>("api/stats");
-            if (_stats?.DailyStats.Count > 0)
-            {
-                var ordered = _stats.DailyStats.OrderBy(d => d.Date).ToList();
-                _chartLabels = ordered.Select(d => d.Date.ToString("MMM dd")).ToArray();
-                _chartSeries =
-                [
-                    new ChartSeries { Name = "Accuracy %", Data = ordered.Select(d => (double)d.Accuracy).ToArray() },
-                    new ChartSeries { Name = "Speed (WPM)", Data = ordered.Select(d => (double)d.Speed).ToArray() }
-                ];
-            }
         }
         finally { _loading = false; }
+    }
+
+    private async Task LogoutAsync()
+    {
+        await Auth.ClearAsync();
+        Navigation.NavigateTo("/");
+    }
+
+    private string GetAccuracyPoints()
+    {
+        var ordered = _stats!.DailyStats.OrderBy(d => d.Date).ToList();
+        var n = ordered.Count;
+        double xStep = n > 1 ? 560.0 / (n - 1) : 0;
+        return string.Join(" ", ordered.Select((d, i) =>
+            $"{20 + i * xStep:F1},{180 - (double)d.Accuracy * 1.8:F1}"));
+    }
+
+    private string GetSpeedPoints()
+    {
+        var ordered = _stats!.DailyStats.OrderBy(d => d.Date).ToList();
+        var n = ordered.Count;
+        double xStep = n > 1 ? 560.0 / (n - 1) : 0;
+        double maxSpd = ordered.Max(d => (double)d.Speed);
+        maxSpd = maxSpd < 1 ? 1 : maxSpd;
+        return string.Join(" ", ordered.Select((d, i) =>
+            $"{20 + i * xStep:F1},{180 - (double)d.Speed / maxSpd * 180:F1}"));
     }
 
     private static string FormatTime(TimeSpan t) =>
