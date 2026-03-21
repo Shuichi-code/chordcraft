@@ -78,7 +78,7 @@ All pages use a blue Duolingo-inspired theme:
 ## Client Layouts
 
 - `src/ChordCraft.Client/Layout/MainLayout.razor` — default layout with `MudAppBar` (app pages not yet redesigned)
-- `src/ChordCraft.Client/Layout/LandingLayout.razor` — bare layout (MudBlazor providers only, no AppBar); used by Landing, Dashboard, Login, Register
+- `src/ChordCraft.Client/Layout/LandingLayout.razor` — bare layout (MudBlazor providers only, no AppBar); used by all redesigned pages (Landing, Dashboard, Login, Register, LessonCatalog, TypingInterface, Stats, Badges)
 - `src/ChordCraft.Client/Layouts/DashboardLayout.razor` — legacy dashboard layout (superseded)
 
 Scoped CSS files (`.razor.css`) are used for component-level styles. Use `padding-left`/`padding-right` longhand (not `padding` shorthand) on elements that also carry the `.container` class, to avoid the container's padding override.
@@ -96,8 +96,13 @@ Scoped CSS files (`.razor.css`) are used for component-level styles. Use `paddin
 | Login | `Pages/Login.razor` + `.css` | Centered card with icon header, styled inputs |
 | Register | `Pages/Register.razor` + `.css` | Same card style, side-by-side password fields |
 | LessonCatalog | `Pages/LessonCatalog.razor` + `.css` | Progress banner, phase pill badges, circular lesson nodes |
+| TypingInterface | `Pages/TypingInterface.razor` + `.css` | Themed navbar, top bar (back/title/sound), bottom prev/skip; inner lesson components untouched |
+| Stats | `Pages/Stats.razor` + `.css` | Stat summary cards, inline SVG line chart (replaces MudChart), data table, SwitchHeatmap sub-component kept |
+| Badges | `Pages/Badges.razor` + `.css` | Earned (gold border + trophy) / unearned (locked) badge grid; anonymous teaser with CTA |
 
 `LessonCard` component (`Components/Lessons/LessonCard.razor`) redesigned as Duolingo-style circular nodes: yellow = active/next, blue = completed, gray = locked.
+
+**All pages are now redesigned.** No pages remain on `MainLayout`/MudBlazor chrome.
 
 ## Domain Model
 
